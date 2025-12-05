@@ -1,22 +1,47 @@
-<p style="display:flex; justify-content: center">
+# GTC NPM Test 组件库
 
-</p>
-<p align="center">
-  <a href="https://tdesign.tencent.com/vue/overview" target="_blank">
-<img alt="TDesign Logo" width="200" src="./public/tdesign-logo.svg"/>
-  </a>
-</p>
+一个基于 Vue 2 的轻量级组件库，提供 TestNpmTest 组件。
 
-<p align="center">
-  <a href="https://nodejs.org/en/about/releases/"><img src="https://img.shields.io/node/v/vite.svg" alt="node compatility"></a>
-  <a href="https://github.com/Tencent/tdesign-react-starter/blob/develop/LICENSE">
-    <img src="https://img.shields.io/npm/l/tdesign-react.svg?sanitize=true" alt="License">
-  </a>
-</p>
+## 安装
 
-## 项目简介
+```bash
+npm install gtc-npm-test
+```
 
-`tdesign-vue` 是一个 TDesign 适配桌面端的组件库，适合在 vue 2 技术栈项目中使用。
+## 使用方法
+
+### 全局引入
+
+```javascript
+import Vue from 'vue'
+import TestNpmTest from 'gtc-npm-test'
+import 'gtc-npm-test/dist/style.css'
+
+Vue.use(TestNpmTest)
+```
+
+### 按需引入
+
+```javascript
+import { TestNpmTest } from 'gtc-npm-test'
+import 'gtc-npm-test/dist/style.css'
+
+export default {
+  components: {
+    TestNpmTest
+  }
+}
+```
+
+### 在模板中使用
+
+```vue
+<template>
+  <div>
+    <TestNpmTest />
+  </div>
+</template>
+```
 
 ## 开发
 
@@ -26,20 +51,36 @@
 npm install
 ```
 
-### 启动项目
+### 启动开发服务器
 
 ```bash
 npm run dev
 ```
 
-## 构建
+### 构建组件库
 
-### 构建正式环境
+```bash
+npm run build:lib
+```
+
+### 构建演示项目
 
 ```bash
 npm run build
 ```
 
+## 发布到 NPM
+
+1. 构建组件库
+```bash
+npm run build:lib
+```
+
+2. 发布到 npm
+```bash
+npm publish
+```
+
 ## 开源协议
 
-TDesign 遵循 [MIT 协议](https://github.com/Tencent/tdesign-starter-cli/blob/develop/LICENSE)。
+MIT License

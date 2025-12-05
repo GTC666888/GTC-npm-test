@@ -9,8 +9,8 @@
 import Vue from "vue";
 import {
   TestNpmTest,
-  Test
 } from "./components/index.js";
+import Test from "./components/test/index.vue"
 
 export default Vue.extend({
   components: {
