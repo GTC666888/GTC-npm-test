@@ -1,0 +1,25 @@
+{
+  "name": "GT-npm-test",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@tangllty/vite-plugin-svg": "^1.0.0",
+    "husky": "^9.1.7",
+    "vite": "^4.0.0",
+    "vite-plugin-vue2": "^2.0.3",
+    "vue-template-compiler": "~2.6.14"
+  },
+  "dependencies": {
+    "tdesign-icons-vue": "latest",
+    "tdesign-vue": "latest",
+    "vue": "~2.6.14"
+  },
+  "description": "Base on tdesign-starter-cli"
+}
