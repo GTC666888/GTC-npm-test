@@ -1,0 +1,228 @@
+/* 集成化看板专用样式 */
+.dashboard-container {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.current-time {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--td-text-color-secondary);
+  font-weight: 500;
+}
+
+.stats-overview .t-card {
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 12px;
+}
+
+.stats-overview .t-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.system-cards .t-card {
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.system-cards .t-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.stat-value {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--td-text-color-secondary);
+  margin-bottom: 8px;
+}
+
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--td-text-color-secondary);
+  margin-top: auto;
+}
+
+.trend-indicator.positive {
+  color: #00a870;
+}
+
+.trend-indicator.negative {
+  color: #e34d59;
+}
+
+.simple-chart {
+  margin-top: auto;
+  height: 30px;
+}
+
+.chart-bars {
+  display: flex;
+  align-items: end;
+  height: 100%;
+  gap: 3px;
+}
+
+.chart-bar {
+  flex: 1;
+  min-height: 4px;
+  border-radius: 2px 2px 0 0;
+  transition: height 0.3s ease;
+}
+
+/* 图表卡片样式调整 */
+.system-content {
+  padding: 8px 0;
+}
+
+.stat-card {
+  text-align: center;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 180px;
+}
+
+:deep(.t-card__body) {
+  padding: 16px;
+}
+
+:deep(.t-card__header) {
+  padding: 16px;
+}
+
+:deep(.t-statistic) {
+  text-align: center;
+}
+
+:deep(.t-statistic-title) {
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+:deep(.t-statistic-content) {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* 确保所有卡片间距一致 */
+.stats-overview {
+  margin-bottom: 24px;
+}
+
+.system-cards > .t-row {
+  margin-bottom: 24px;
+}
+
+.system-cards > .t-row:last-child {
+  margin-bottom: 0;
+}
+
+/* 统一所有卡片内部padding */
+:deep(.t-card) {
+  margin-bottom: 0;
+}
+
+:deep(.t-card) .t-card__body {
+  padding: 16px;
+}
+
+/* 确保统计卡片高度一致 */
+:deep(.stats-overview .t-card) {
+  height: 160px;
+}
+
+/* 确保系统卡片高度一致 */
+:deep(.system-cards .t-card) {
+  height: 240px;
+}
+
+.config-item {
+  transition: all 0.3s ease;
+}
+
+.config-item:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: scale(1.05);
+}
+
+.config-item:hover .config-info .config-desc {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.system-data {
+  animation: slideInLeft 0.5s ease forwards;
+  opacity: 0;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+  .stats-overview .t-col {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .system-cards .t-col {
+    margin-bottom: 16px;
+  }
+}
