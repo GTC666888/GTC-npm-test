@@ -1,5 +1,5 @@
 <template>
-  <div class="api-documentation-container">
+  <div class="home-container">
     <!-- 头部导航 -->
     <div class="doc-header">
       <div class="header-content">
@@ -23,7 +23,7 @@
     <!-- API概览统计 -->
     <div class="api-overview">
       <t-row :gutter="20">
-        <t-col :span="3">
+        <t-col :span="6">
           <div class="overview-card">
             <div class="overview-icon primary">
               <t-icon name="api" />
@@ -34,7 +34,7 @@
             </div>
           </div>
         </t-col>
-        <t-col :span="3">
+        <t-col :span="6">
           <div class="overview-card">
             <div class="overview-icon success">
               <t-icon name="check-circle" />
@@ -45,189 +45,7 @@
             </div>
           </div>
         </t-col>
-        <t-col :span="3">
-          <div class="overview-card">
-            <div class="overview-icon warning">
-              <t-icon name="user" />
-            </div>
-            <div class="overview-content">
-              <div class="overview-value">{{ apiStats.developers }}</div>
-              <div class="overview-label">开发者数量</div>
-            </div>
-          </div>
-        </t-col>
-        <t-col :span="3">
-          <div class="overview-card">
-            <div class="overview-icon info">
-              <t-icon name="time" />
-            </div>
-            <div class="overview-content">
-              <div class="overview-value">{{ apiStats.uptime }}%</div>
-              <div class="overview-label">服务可用性</div>
-            </div>
-          </div>
-        </t-col>
       </t-row>
-    </div>
-
-    <!-- API分类展示 -->
-    <div class="api-categories">
-      <div class="section-header">
-        <h2>API分类</h2>
-        <p>按业务领域分类的API接口</p>
-      </div>
-      
-      <div class="category-grid">
-        <!-- 员工管理API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon employee">
-              <t-icon name="usergroup" />
-            </div>
-            <div class="category-info">
-              <h3>员工管理</h3>
-              <span class="api-count">{{ apiCategories.employee.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.employee.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 组织架构API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon organization">
-              <t-icon name="chart" />
-            </div>
-            <div class="category-info">
-              <h3>组织架构</h3>
-              <span class="api-count">{{ apiCategories.organization.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.organization.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 考勤管理API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon attendance">
-              <t-icon name="time" />
-            </div>
-            <div class="category-info">
-              <h3>考勤管理</h3>
-              <span class="api-count">{{ apiCategories.attendance.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.attendance.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 薪酬福利API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon compensation">
-              <t-icon name="money-circle" />
-            </div>
-            <div class="category-info">
-              <h3>薪酬福利</h3>
-              <span class="api-count">{{ apiCategories.compensation.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.compensation.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 绩效管理API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon performance">
-              <t-icon name="chart-line" />
-            </div>
-            <div class="category-info">
-              <h3>绩效管理</h3>
-              <span class="api-count">{{ apiCategories.performance.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.performance.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 培训发展API -->
-        <div class="category-card">
-          <div class="category-header">
-            <div class="category-icon training">
-              <t-icon name="graduation-cap" />
-            </div>
-            <div class="category-info">
-              <h3>培训发展</h3>
-              <span class="api-count">{{ apiCategories.training.count }} 个API</span>
-            </div>
-          </div>
-          <div class="category-apis">
-            <div v-for="api in apiCategories.training.apis" :key="api.name" class="api-item">
-              <div class="api-method" :class="api.method">{{ api.method }}</div>
-              <div class="api-info">
-                <div class="api-name">{{ api.name }}</div>
-                <div class="api-desc">{{ api.description }}</div>
-              </div>
-              <t-button size="small" theme="primary" variant="text" @click="handleTryApi(api)">
-                试用
-              </t-button>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- 开发指南 -->
@@ -255,7 +73,7 @@
             <h3>接口授权</h3>
             <p>配置应用权限，申请需要调用的API接口访问权限</p>
             <t-button theme="primary" size="small" @click="handleStepGuide('auth')">
-              查看教程
+              立即申请
             </t-button>
           </div>
         </div>
@@ -284,82 +102,209 @@
       </div>
     </div>
 
-    <!-- API调用示例 -->
-    <div class="api-examples">
+    <!-- API分类展示 -->
+    <div class="api-categories">
       <div class="section-header">
-        <h2>调用示例</h2>
-        <p>查看不同编程语言的API调用代码示例</p>
+        <h2>ER领域分类</h2>
+        <p>按业务领域分类的API接口</p>
       </div>
+      
+      <div class="category-grid">
+        <!-- 员工管理API -->
+        <div class="category-card" @click="handleGoToSystemDetail('employee')">
+          <div class="category-header">
+            <div class="category-icon employee">
+              <t-icon name="usergroup" />
+            </div>
+            <div class="category-info">
+              <h3>员工管理</h3>
+              <span class="api-count">{{ apiCategories.employee.count }} 个API</span>
+            </div>
+          </div>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.employee.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
+          </div>
+        </div>
 
-      <t-tabs v-model="activeTab" theme="card">
-        <t-tab-panel value="curl" label="cURL">
-          <div class="code-example">
-            <pre><code>{{ codeExamples.curl }}</code></pre>
+        <!-- 组织架构API -->
+        <div class="category-card" @click="handleGoToSystemDetail('organization')">
+          <div class="category-header">
+            <div class="category-icon organization">
+              <t-icon name="chart" />
+            </div>
+            <div class="category-info">
+              <h3>组织架构</h3>
+              <span class="api-count">{{ apiCategories.organization.count }} 个API</span>
+            </div>
           </div>
-        </t-tab-panel>
-        <t-tab-panel value="javascript" label="JavaScript">
-          <div class="code-example">
-            <pre><code>{{ codeExamples.javascript }}</code></pre>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.organization.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
           </div>
-        </t-tab-panel>
-        <t-tab-panel value="python" label="Python">
-          <div class="code-example">
-            <pre><code>{{ codeExamples.python }}</code></pre>
+        </div>
+
+        <!-- 考勤管理API -->
+        <div class="category-card" @click="handleGoToSystemDetail('attendance')">
+          <div class="category-header">
+            <div class="category-icon attendance">
+              <t-icon name="time" />
+            </div>
+            <div class="category-info">
+              <h3>考勤管理</h3>
+              <span class="api-count">{{ apiCategories.attendance.count }} 个API</span>
+            </div>
           </div>
-        </t-tab-panel>
-        <t-tab-panel value="java" label="Java">
-          <div class="code-example">
-            <pre><code>{{ codeExamples.java }}</code></pre>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.attendance.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
           </div>
-        </t-tab-panel>
-      </t-tabs>
+        </div>
+
+        <!-- 薪酬福利API -->
+        <div class="category-card" @click="handleGoToSystemDetail('compensation')">
+          <div class="category-header">
+            <div class="category-icon compensation">
+              <t-icon name="money-circle" />
+            </div>
+            <div class="category-info">
+              <h3>薪酬福利</h3>
+              <span class="api-count">{{ apiCategories.compensation.count }} 个API</span>
+            </div>
+          </div>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.compensation.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 绩效管理API -->
+        <div class="category-card" @click="handleGoToSystemDetail('performance')">
+          <div class="category-header">
+            <div class="category-icon performance">
+              <t-icon name="chart-line" />
+            </div>
+            <div class="category-info">
+              <h3>绩效管理</h3>
+              <span class="api-count">{{ apiCategories.performance.count }} 个API</span>
+            </div>
+          </div>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.performance.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 培训发展API -->
+        <div class="category-card" @click="handleGoToSystemDetail('training')">
+          <div class="category-header">
+            <div class="category-icon training">
+              <t-icon name="graduation-cap" />
+            </div>
+            <div class="category-info">
+              <h3>培训发展</h3>
+              <span class="api-count">{{ apiCategories.training.count }} 个API</span>
+            </div>
+          </div>
+          <div class="category-apis">
+            <div v-for="api in apiCategories.training.apis" :key="api.id" class="api-item" @click="handleGoToApiDetail(api, $event)">
+              <div class="api-method" :class="api.method">{{ api.method }}</div>
+              <div class="api-info">
+                <div class="api-name">{{ api.name }}</div>
+                <div class="api-desc">{{ api.description }}</div>
+                <div class="api-metrics">
+                  <div class="metric-chart" :id="`chart-${api.id}`" :ref="`chart-${api.id}`"></div>
+                  <div class="metric-data">
+                    <span class="response-time">{{ api.avgResponseTime }}ms</span>
+                    <span class="success-rate" :class="{ 'high': api.successRate > 95, 'medium': api.successRate > 80 }">{{ api.successRate }}%</span>
+                  </div>
+                </div>
+              </div>
+              <t-button size="small" theme="primary" variant="text" @click.stop="handleTryApi(api)">
+                试用
+              </t-button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- API状态监控 -->
-    <div class="api-status">
-      <div class="section-header">
-        <h2>服务状态</h2>
-        <p>实时API服务状态和性能监控</p>
-      </div>
-
-      <div class="status-grid">
-        <div class="status-item">
-          <div class="status-indicator online"></div>
-          <div class="status-info">
-            <div class="status-title">员工管理API</div>
-            <div class="status-desc">响应时间: {{ apiStatus.employee.responseTime }}ms</div>
-          </div>
-          <t-tag theme="success">正常</t-tag>
-        </div>
-
-        <div class="status-item">
-          <div class="status-indicator online"></div>
-          <div class="status-info">
-            <div class="status-title">组织架构API</div>
-            <div class="status-desc">响应时间: {{ apiStatus.organization.responseTime }}ms</div>
-          </div>
-          <t-tag theme="success">正常</t-tag>
-        </div>
-
-        <div class="status-item">
-          <div class="status-indicator warning"></div>
-          <div class="status-info">
-            <div class="status-title">考勤管理API</div>
-            <div class="status-desc">响应时间: {{ apiStatus.attendance.responseTime }}ms</div>
-          </div>
-          <t-tag theme="warning">缓慢</t-tag>
-        </div>
-
-        <div class="status-item">
-          <div class="status-indicator online"></div>
-          <div class="status-info">
-            <div class="status-title">薪酬福利API</div>
-            <div class="status-desc">响应时间: {{ apiStatus.compensation.responseTime }}ms</div>
-          </div>
-          <t-tag theme="success">正常</t-tag>
-        </div>
-      </div>
-    </div>
+    
 
     <!-- 支持与帮助 -->
     <div class="support-section">
@@ -403,9 +348,10 @@
 
 <script>
 import { Icon as TIcon } from 'tdesign-icons-vue'
+import * as echarts from 'echarts'
 
 export default {
-  name: 'ApiDocumentation',
+  name: 'HomePage',
   components: {
     TIcon
   },
@@ -426,49 +372,49 @@ export default {
         employee: {
           count: 24,
           apis: [
-            { method: 'GET', name: '/api/employees', description: '获取员工列表' },
-            { method: 'POST', name: '/api/employees', description: '创建新员工' },
-            { method: 'PUT', name: '/api/employees/{id}', description: '更新员工信息' }
+            { id: 'emp-list', method: 'GET', name: '/api/employees', description: '获取员工列表', avgResponseTime: 156, successRate: 99.2, chartData: [120, 156, 134, 178, 145, 167, 152] },
+            { id: 'emp-create', method: 'POST', name: '/api/employees', description: '创建新员工', avgResponseTime: 234, successRate: 98.8, chartData: [245, 223, 256, 267, 234, 245, 228] },
+            { id: 'emp-update', method: 'PUT', name: '/api/employees/{id}', description: '更新员工信息', avgResponseTime: 189, successRate: 99.5, chartData: [167, 189, 178, 195, 182, 188, 191] }
           ]
         },
         organization: {
           count: 18,
           apis: [
-            { method: 'GET', name: '/api/departments', description: '获取部门列表' },
-            { method: 'GET', name: '/api/positions', description: '获取职位信息' },
-            { method: 'POST', name: '/api/departments', description: '创建新部门' }
+            { id: 'dept-list', method: 'GET', name: '/api/departments', description: '获取部门列表', avgResponseTime: 134, successRate: 99.6, chartData: [145, 134, 156, 128, 139, 147, 132] },
+            { id: 'pos-list', method: 'GET', name: '/api/positions', description: '获取职位信息', avgResponseTime: 128, successRate: 99.8, chartData: [134, 128, 125, 132, 129, 131, 126] },
+            { id: 'dept-create', method: 'POST', name: '/api/departments', description: '创建新部门', avgResponseTime: 267, successRate: 98.2, chartData: [278, 267, 289, 256, 274, 281, 263] }
           ]
         },
         attendance: {
           count: 22,
           apis: [
-            { method: 'GET', name: '/api/attendance/records', description: '获取考勤记录' },
-            { method: 'POST', name: '/api/attendance/checkin', description: '员工打卡' },
-            { method: 'GET', name: '/api/attendance/summary', description: '考勤统计' }
+            { id: 'att-records', method: 'GET', name: '/api/attendance/records', description: '获取考勤记录', avgResponseTime: 189, successRate: 98.9, chartData: [178, 189, 195, 182, 188, 192, 185] },
+            { id: 'att-checkin', method: 'POST', name: '/api/attendance/checkin', description: '员工打卡', avgResponseTime: 145, successRate: 99.1, chartData: [156, 145, 139, 148, 142, 147, 144] },
+            { id: 'att-summary', method: 'GET', name: '/api/attendance/summary', description: '考勤统计', avgResponseTime: 278, successRate: 97.8, chartData: [289, 278, 295, 267, 281, 287, 276] }
           ]
         },
         compensation: {
           count: 20,
           apis: [
-            { method: 'GET', name: '/api/salary', description: '获取薪资信息' },
-            { method: 'POST', name: '/api/salary/calculate', description: '计算薪资' },
-            { method: 'GET', name: '/api/benefits', description: '获取福利信息' }
+            { id: 'sal-info', method: 'GET', name: '/api/salary', description: '获取薪资信息', avgResponseTime: 234, successRate: 99.4, chartData: [245, 234, 228, 239, 231, 236, 232] },
+            { id: 'sal-calc', method: 'POST', name: '/api/salary/calculate', description: '计算薪资', avgResponseTime: 456, successRate: 97.5, chartData: [445, 456, 467, 448, 459, 452, 463] },
+            { id: 'benefits-info', method: 'GET', name: '/api/benefits', description: '获取福利信息', avgResponseTime: 198, successRate: 99.0, chartData: [189, 198, 206, 192, 201, 195, 203] }
           ]
         },
         performance: {
           count: 16,
           apis: [
-            { method: 'GET', name: '/api/performance/reviews', description: '获取绩效评估' },
-            { method: 'POST', name: '/api/performance/evaluate', description: '提交绩效评估' },
-            { method: 'GET', name: '/api/performance/goals', description: '获取目标管理' }
+            { id: 'perf-reviews', method: 'GET', name: '/api/performance/reviews', description: '获取绩效评估', avgResponseTime: 267, successRate: 98.3, chartData: [278, 267, 256, 274, 261, 269, 263] },
+            { id: 'perf-evaluate', method: 'POST', name: '/api/performance/evaluate', description: '提交绩效评估', avgResponseTime: 334, successRate: 96.9, chartData: [323, 334, 345, 328, 339, 331, 336] },
+            { id: 'perf-goals', method: 'GET', name: '/api/performance/goals', description: '获取目标管理', avgResponseTime: 145, successRate: 99.2, chartData: [156, 145, 139, 148, 142, 147, 144] }
           ]
         },
         training: {
           count: 28,
           apis: [
-            { method: 'GET', name: '/api/training/courses', description: '获取培训课程' },
-            { method: 'POST', name: '/api/training/enroll', description: '报名培训' },
-            { method: 'GET', name: '/api/training/records', description: '培训记录' }
+            { id: 'train-courses', method: 'GET', name: '/api/training/courses', description: '获取培训课程', avgResponseTime: 189, successRate: 98.7, chartData: [178, 189, 195, 182, 188, 192, 185] },
+            { id: 'train-enroll', method: 'POST', name: '/api/training/enroll', description: '报名培训', avgResponseTime: 223, successRate: 97.8, chartData: [234, 223, 215, 228, 219, 225, 221] },
+            { id: 'train-records', method: 'GET', name: '/api/training/records', description: '培训记录', avgResponseTime: 156, successRate: 99.1, chartData: [145, 156, 148, 159, 152, 157, 154] }
           ]
         }
       },
@@ -480,6 +426,93 @@ export default {
         attendance: { responseTime: 350 },
         compensation: { responseTime: 95 }
       },
+
+      // 异常API统计
+      exceptionStats: {
+        critical: 8,
+        criticalTrend: '12%',
+        warning: 15,
+        warningTrend: '8%',
+        avgResponseTime: 456,
+        responseTimeTrend: '持平',
+        resolved: 23,
+        resolvedTrend: '15%'
+      },
+
+      // 异常时间范围
+      exceptionTimeRange: '24h',
+
+      // 异常搜索过滤
+      exceptionFilter: '',
+
+      // 异常API列表
+      exceptions: [
+        {
+          id: 'exc_001',
+          severity: 'critical',
+          system: '员工管理',
+          api: { method: 'GET', name: '/api/employees' },
+          endpoint: 'api.er.com/v1/employees',
+          responseTime: 1234,
+          successRate: 85.2,
+          errorCount: 45,
+          error: { code: 500, message: '数据库连接超时' },
+          lastOccurred: new Date(Date.now() - 300000), // 5分钟前
+          status: 'unresolved'
+        },
+        {
+          id: 'exc_002',
+          severity: 'critical',
+          system: '考勤管理',
+          api: { method: 'POST', name: '/api/attendance/checkin' },
+          endpoint: 'api.er.com/v1/attendance/checkin',
+          responseTime: 2345,
+          successRate: 72.8,
+          errorCount: 28,
+          error: { code: 502, message: '考勤设备离线' },
+          lastOccurred: new Date(Date.now() - 600000), // 10分钟前
+          status: 'investigating'
+        },
+        {
+          id: 'exc_003',
+          severity: 'warning',
+          system: '组织架构',
+          api: { method: 'GET', name: '/api/departments' },
+          endpoint: 'api.er.com/v1/departments',
+          responseTime: 567,
+          successRate: 94.5,
+          errorCount: 12,
+          error: { code: 408, message: '请求超时' },
+          lastOccurred: new Date(Date.now() - 900000), // 15分钟前
+          status: 'resolved'
+        },
+        {
+          id: 'exc_004',
+          severity: 'critical',
+          system: '薪酬福利',
+          api: { method: 'GET', name: '/api/salary' },
+          endpoint: 'api.er.com/v1/salary',
+          responseTime: 3456,
+          successRate: 67.3,
+          errorCount: 67,
+          error: { code: 503, message: '薪资计算服务不可用' },
+          lastOccurred: new Date(Date.now() - 1200000), // 20分钟前
+          status: 'unresolved'
+        },
+        {
+          id: 'exc_005',
+          severity: 'warning',
+          system: '绩效管理',
+          api: { method: 'POST', name: '/api/performance/evaluate' },
+          endpoint: 'api.er.com/v1/performance/evaluate',
+          responseTime: 892,
+          successRate: 91.2,
+          errorCount: 8,
+          error: { code: 429, message: '请求频率过高' },
+          lastOccurred: new Date(Date.now() - 1800000), // 30分钟前
+          status: 'resolved'
+        }
+      ],
 
       // 代码示例
       codeExamples: {
@@ -494,6 +527,12 @@ const response = await fetch('https://api.er.com/v1/employees', {
   headers: {
     'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
     'Content-Type': 'application/json'
+  },
+  mounted() {
+    // 页面加载完成后初始化所有API性能图表
+    this.initApiCharts();
+    // 初始化异常趋势图表
+    this.initExceptionChart();
   }
 });
 
@@ -532,6 +571,18 @@ System.out.println(response.body());`
       }
     }
   },
+  computed: {
+    filteredExceptions() {
+      if (!this.exceptionFilter) return this.exceptions;
+      
+      const filter = this.exceptionFilter.toLowerCase();
+      return this.exceptions.filter(exception => 
+        exception.system.toLowerCase().includes(filter) ||
+        exception.api.name.toLowerCase().includes(filter) ||
+        exception.error.message.toLowerCase().includes(filter)
+      );
+    }
+  },
   methods: {
     handleGetStarted() {
       this.$message.success('跳转到快速开始指南');
@@ -540,11 +591,18 @@ System.out.println(response.body());`
       this.$message.success('跳转到API文档');
     },
     handleTryApi(api) {
-      this.$message.info(`试用API: ${api.name}`);
+      // 跳转到API测试页面并预设API信息
+      this.$emit('navigate-to-api-test', api);
+      this.$message.success(`跳转到API测试: ${api.name}`);
     },
     handleStepGuide(step) {
+      if (step === 'apply') {
+        // 跳转到申请应用页面
+        this.$router.push('/app-apply');
+        return;
+      }
+      
       const guideMap = {
-        'apply': '申请应用',
         'auth': '接口授权',
         'token': '获取令牌',
         'call': '调用接口'
@@ -559,7 +617,269 @@ System.out.println(response.body());`
         'feedback': '意见反馈'
       };
       this.$message.info(`跳转到${supportMap[type]}`);
+    },
+    handleGoToApiDetail(api, event) {
+      // 阻止事件冒泡，避免触发分类卡片的跳转
+      if (event) {
+        event.stopPropagation();
+      }
+      
+      // 跳转到API详情页面
+      this.$router.push({
+        name: 'ApiDetail',
+        query: { 
+          apiId: api.id,
+          systemType: this.getApiSystemType(api.id)
+        }
+      });
+      this.$message.success(`查看API详情: ${api.name}`);
+    },
+    
+    getApiSystemType(apiId) {
+      // 根据API ID判断所属系统类型
+      const systemMap = {
+        'emp-': 'employee',
+        'dept-': 'organization',
+        'pos-': 'organization',
+        'att-': 'attendance',
+        'sal-': 'compensation',
+        'benefits-': 'compensation',
+        'perf-': 'performance',
+        'train-': 'training'
+      };
+      
+      for (const [prefix, systemType] of Object.entries(systemMap)) {
+        if (apiId.startsWith(prefix)) {
+          return systemType;
+        }
+      }
+      return 'employee'; // 默认返回员工管理系统
+    },
+    handleGoToSystemDetail(systemType) {
+      const systemNames = {
+        employee: '员工管理',
+        organization: '组织架构', 
+        attendance: '考勤管理',
+        compensation: '薪酬福利',
+        performance: '绩效管理',
+        training: '培训发展'
+      };
+      
+      const systemData = {
+        name: systemNames[systemType],
+        type: systemType,
+        apis: this.apiCategories[systemType]?.apis || [],
+        count: this.apiCategories[systemType]?.count || 0
+      };
+      console.log(123);
+      
+      // 跳转到系统详情页
+      this.$router.push({
+        name: 'SystemDetail',
+        query: { systemType: systemType }
+      });
+    },
+    initApiCharts() {
+      this.$nextTick(() => {
+        // 初始化所有API的性能图表
+        Object.values(this.apiCategories).forEach(category => {
+          category.apis.forEach(api => {
+            this.initSingleChart(api);
+          });
+        });
+      });
+    },
+    initSingleChart(api) {
+      const chartDom = document.getElementById(`chart-${api.id}`);
+      if (!chartDom) return;
+      
+      const chart = echarts.init(chartDom);
+      const option = {
+        grid: {
+          left: '0%',
+          right: '0%',
+          top: '0%',
+          bottom: '0%',
+          containLabel: false
+        },
+        xAxis: {
+          type: 'category',
+          show: false,
+          data: ['', '', '', '', '', '', '']
+        },
+        yAxis: {
+          type: 'value',
+          show: false
+        },
+        series: [{
+          data: api.chartData,
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          lineStyle: {
+            width: 2,
+            color: api.avgResponseTime > 200 ? '#ff4d4f' : api.avgResponseTime > 100 ? '#faad14' : '#52c41a'
+          },
+          areaStyle: {
+            opacity: 0.1,
+            color: api.avgResponseTime > 200 ? '#ff4d4f' : api.avgResponseTime > 100 ? '#faad14' : '#52c41a'
+          }
+        }]
+      };
+      
+      chart.setOption(option);
+      
+      // 添加resize监听
+      window.addEventListener('resize', () => {
+        chart.resize();
+      });
+    },
+
+    // 异常API相关方法
+    refreshExceptions() {
+      this.$message.success('异常数据已刷新');
+      // 这里可以调用实际的数据刷新接口
+    },
+
+    viewAllExceptions() {
+      this.$message.info('跳转到异常管理页面');
+      // 跳转到详细的异常管理页面
+    },
+
+    viewExceptionDetail(exception) {
+      this.$message.info(`查看异常详情: ${exception.api.name}`);
+      // 跳转到异常详情页面
+    },
+
+    getSeverityIcon(severity) {
+      const icons = {
+        'critical': 'error-circle',
+        'warning': 'error-triangle',
+        'info': 'info-circle'
+      };
+      return icons[severity] || 'error-circle';
+    },
+
+    formatTime(timestamp) {
+      const now = new Date();
+      const diff = now - timestamp;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      
+      if (minutes < 60) {
+        return `${minutes}分钟前`;
+      } else if (hours < 24) {
+        return `${hours}小时前`;
+      } else {
+        return timestamp.toLocaleString('zh-CN', { 
+          month: '2-digit', 
+          day: '2-digit', 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        });
+      }
+    },
+
+    initExceptionChart() {
+      const chartDom = document.getElementById('exceptionTrendChart');
+      if (!chartDom) return;
+      
+      const chart = echarts.init(chartDom);
+      const option = {
+        title: { show: false },
+        tooltip: { trigger: 'axis' },
+        legend: {
+          data: ['严重异常', '一般异常', '响应时间'],
+          bottom: 0
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '10%',
+          top: '5%'
+        },
+        xAxis: {
+          type: 'category',
+          data: this.generateExceptionTimeLabels()
+        },
+        yAxis: [
+          {
+            type: 'value',
+            name: '异常次数',
+            position: 'left'
+          },
+          {
+            type: 'value',
+            name: '响应时间(ms)',
+            position: 'right'
+          }
+        ],
+        series: [
+          {
+            name: '严重异常',
+            type: 'line',
+            data: this.generateExceptionData('critical'),
+            itemStyle: { color: '#ff4d4f' },
+            smooth: true
+          },
+          {
+            name: '一般异常',
+            type: 'line',
+            data: this.generateExceptionData('warning'),
+            itemStyle: { color: '#faad14' },
+            smooth: true
+          },
+          {
+            name: '响应时间',
+            type: 'bar',
+            yAxisIndex: 1,
+            data: this.generateExceptionData('responseTime'),
+            itemStyle: { color: '#1890ff' },
+            opacity: 0.3
+          }
+        ]
+      };
+      
+      chart.setOption(option);
+      window.addEventListener('resize', () => chart.resize());
+    },
+
+    generateExceptionTimeLabels() {
+      const labels = [];
+      const now = new Date();
+      for (let i = 23; i >= 0; i--) {
+        const time = new Date(now - i * 3600000);
+        labels.push(time.getHours() + ':00');
+      }
+      return labels;
+    },
+
+    generateExceptionData(type) {
+      const dataLength = 24;
+      
+      switch (type) {
+        case 'critical':
+          return Array.from({ length: dataLength }, () => 
+            Math.floor(Math.random() * 10) + 2
+          );
+        case 'warning':
+          return Array.from({ length: dataLength }, () => 
+            Math.floor(Math.random() * 15) + 5
+          );
+        case 'responseTime':
+          return Array.from({ length: dataLength }, () => 
+            Math.floor(Math.random() * 800) + 200
+          );
+        default:
+          return Array.from({ length: dataLength }, () => 0);
+      }
     }
+  },
+  mounted() {
+    // 页面加载完成后初始化所有API性能图表
+    this.initApiCharts();
+    // 初始化异常趋势图表
+    this.initExceptionChart();
   }
 }
 </script>
@@ -691,12 +1011,13 @@ System.out.println(response.body());`
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  cursor: pointer;
 }
 
 .category-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .category-header {
@@ -753,6 +1074,66 @@ System.out.println(response.body());`
 
 .api-item:hover {
   background: var(--td-bg-color-container-select);
+  cursor: pointer;
+}
+
+.api-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.api-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--td-text-color-primary);
+}
+
+.api-desc {
+  font-size: 12px;
+  color: var(--td-text-color-secondary);
+}
+
+.api-metrics {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.metric-chart {
+  width: 80px;
+  height: 24px;
+}
+
+.metric-data {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.response-time {
+  color: var(--td-text-color-secondary);
+}
+
+.success-rate {
+  color: #ff4d4f;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: rgba(255, 77, 79, 0.1);
+}
+
+.success-rate.medium {
+  color: #faad14;
+  background: rgba(250, 173, 20, 0.1);
+}
+
+.success-rate.high {
+  color: #52c41a;
+  background: rgba(82, 196, 26, 0.1);
 }
 
 .api-method {
