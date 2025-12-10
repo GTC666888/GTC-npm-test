@@ -585,9 +585,16 @@ System.out.println(response.body());`
       this.$message.success('跳转到API文档');
     },
     handleTryApi(api) {
-      // 跳转到API测试页面并预设API信息
-      this.$emit('navigate-to-api-test', api);
-      this.$message.success(`跳转到API测试: ${api.name}`);
+      // 跳转到API调试页面，传递API信息并锁定URL不可更换
+      this.$router.push({
+        path: '/api-debug',
+        query: {
+          url: `https://api.er.com/v1${api.name.replace('/api', '')}`,
+          method: api.method,
+          apiName: api.description,
+          locked: 'true'  // 标记为锁定模式，不可更换API
+        }
+      });
     },
     handleStepGuide(step) {
       if (step === 'apply') {
@@ -602,11 +609,17 @@ System.out.println(response.body());`
         return;
       }
       
-      const guideMap = {
-        'token': '获取令牌',
-        'call': '调用接口'
-      };
-      this.$message.info(`查看${guideMap[step]}教程`);
+      if (step === 'token') {
+        // 跳转到Token文档页面
+        this.$router.push('/token');
+        return;
+      }
+      
+      if (step === 'call') {
+        // 跳转到API在线调试页面
+        this.$router.push('/api-debug');
+        return;
+      }
     },
     handleSupport(type) {
       const supportMap = {
