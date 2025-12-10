@@ -29,6 +29,11 @@ const router = new VueRouter({
       path: '/app-apply',
       name: 'AppApply',
       component: () => import('../pages/app-apply/index.vue')
+    },
+    {
+      path: '/api-auth',
+      name: 'ApiAuth',
+      component: () => import('../pages/api-auth/index.vue')
     }
   ]
 })

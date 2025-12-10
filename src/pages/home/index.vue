@@ -527,12 +527,6 @@ const response = await fetch('https://api.er.com/v1/employees', {
   headers: {
     'Authorization': 'Bearer YOUR_ACCESS_TOKEN',
     'Content-Type': 'application/json'
-  },
-  mounted() {
-    // 页面加载完成后初始化所有API性能图表
-    this.initApiCharts();
-    // 初始化异常趋势图表
-    this.initExceptionChart();
   }
 });
 
@@ -578,7 +572,7 @@ System.out.println(response.body());`
       const filter = this.exceptionFilter.toLowerCase();
       return this.exceptions.filter(exception => 
         exception.system.toLowerCase().includes(filter) ||
-        exception.api.name.toLowerCase().includes(filter) ||
+        (exception.api && exception.api.name && exception.api.name.toLowerCase().includes(filter)) ||
         exception.error.message.toLowerCase().includes(filter)
       );
     }
@@ -602,8 +596,13 @@ System.out.println(response.body());`
         return;
       }
       
+      if (step === 'auth') {
+        // 跳转到接口授权页面
+        this.$router.push('/api-auth');
+        return;
+      }
+      
       const guideMap = {
-        'auth': '接口授权',
         'token': '获取令牌',
         'call': '调用接口'
       };
@@ -747,7 +746,8 @@ System.out.println(response.body());`
     },
 
     viewExceptionDetail(exception) {
-      this.$message.info(`查看异常详情: ${exception.api.name}`);
+      const apiName = exception.api && exception.api.name ? exception.api.name : '未知API';
+      this.$message.info(`查看异常详情: ${apiName}`);
       // 跳转到异常详情页面
     },
 
