@@ -29,7 +29,7 @@
             <t-form-item label="站点名称" name="siteName">
               <t-input 
                 v-model="formData.siteName" 
-                placeholder="请输入站点名称，如：人力资源管理系统" 
+                placeholder="请输入站点名称，如：人力资源管理" 
                 clearable 
               />
             </t-form-item>

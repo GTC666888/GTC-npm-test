@@ -261,7 +261,7 @@ grant_type=client_credentials
                   <t-icon name="file-copy" />
                 </t-button>
               </div>
-              <pre><code>GET /api/v1/employees HTTP/1.1
+              <pre><code>GET /api/v1/group/employees HTTP/1.1
 Host: api.example.com
 Authorization: Bearer YOUR_ACCESS_TOKEN
 Content-Type: application/json</code></pre>
@@ -437,7 +437,7 @@ grant_type=client_credentials&client_id=YOUR_APP_KEY&client_secret=YOUR_APP_SECR
     
     // 复制使用示例
     copyUsageExample() {
-      const example = `GET /api/v1/employees HTTP/1.1
+      const example = `GET /api/v1/group/employees HTTP/1.1
 Host: api.example.com
 Authorization: Bearer YOUR_ACCESS_TOKEN
 Content-Type: application/json`

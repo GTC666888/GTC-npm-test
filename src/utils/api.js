@@ -296,51 +296,86 @@ apiService.addResponseInterceptor(async (response) => {
 
 // ER API 具体方法
 export const ER_API = {
-  // 员工管理
-  employees: {
-    list: (params = {}) => apiService.get('/employees', params),
-    create: (data) => apiService.post('/employees', data),
-    update: (id, data) => apiService.put(`/employees/${id}`, data),
-    delete: (id) => apiService.delete(`/employees/${id}`),
-    get: (id) => apiService.get(`/employees/${id}`)
+  // 集团用工
+  groupEmployment: {
+    employees: {
+      list: (params = {}) => apiService.get('/group/employees', params),
+      create: (data) => apiService.post('/group/employees', data),
+      update: (id, data) => apiService.put(`/group/employees/${id}`, data),
+      delete: (id) => apiService.delete(`/group/employees/${id}`),
+      get: (id) => apiService.get(`/group/employees/${id}`)
+    },
+    contracts: {
+      list: (params = {}) => apiService.get('/group/contracts', params),
+      create: (data) => apiService.post('/group/contracts', data),
+      update: (id, data) => apiService.put(`/group/contracts/${id}`, data)
+    },
+    transfer: {
+      create: (data) => apiService.post('/group/transfer', data),
+      list: (params = {}) => apiService.get('/group/transfer', params)
+    }
   },
 
-  // 部门管理
-  departments: {
-    list: (params = {}) => apiService.get('/departments', params),
-    create: (data) => apiService.post('/departments', data),
-    update: (id, data) => apiService.put(`/departments/${id}`, data),
-    delete: (id) => apiService.delete(`/departments/${id}`),
-    get: (id) => apiService.get(`/departments/${id}`)
+  // 非正式用工
+  informalEmployment: {
+    tempEmployees: {
+      list: (params = {}) => apiService.get('/temp/employees', params),
+      create: (data) => apiService.post('/temp/employees', data),
+      update: (id, data) => apiService.put(`/temp/employees/${id}`, data)
+    },
+    contracts: {
+      list: (params = {}) => apiService.get('/temp/contracts', params),
+      create: (data) => apiService.post('/temp/contracts', data)
+    },
+    outsource: {
+      list: (params = {}) => apiService.get('/outsource/manage', params),
+      create: (data) => apiService.post('/outsource/manage', data)
+    },
+    flexible: {
+      list: (params = {}) => apiService.get('/flexible/work', params),
+      create: (data) => apiService.post('/flexible/work', data)
+    }
   },
 
-  // 考勤管理
-  attendance: {
-    records: (params = {}) => apiService.get('/attendance/records', params),
-    checkin: (data) => apiService.post('/attendance/checkin', data),
-    checkout: (data) => apiService.post('/attendance/checkout', data),
-    summary: (params = {}) => apiService.get('/attendance/summary', params)
+  // 合规
+  compliance: {
+    legal: {
+      check: (params = {}) => apiService.get('/compliance/legal', params),
+      create: (data) => apiService.post('/compliance/legal', data)
+    },
+    audit: {
+      reports: (params = {}) => apiService.get('/compliance/audit', params),
+      create: (data) => apiService.post('/compliance/audit', data)
+    },
+    risk: {
+      assess: (params = {}) => apiService.get('/compliance/risk', params),
+      create: (data) => apiService.post('/compliance/risk', data)
+    },
+    policy: {
+      check: (params = {}) => apiService.get('/compliance/policy', params),
+      verify: (data) => apiService.post('/compliance/policy', data)
+    }
   },
 
-  // 薪酬管理
-  salary: {
-    list: (params = {}) => apiService.get('/salary', params),
-    calculate: (data) => apiService.post('/salary/calculate', data),
-    details: (id) => apiService.get(`/salary/${id}`)
-  },
-
-  // 绩效管理
-  performance: {
-    reviews: (params = {}) => apiService.get('/performance/reviews', params),
-    evaluate: (data) => apiService.post('/performance/evaluate', data),
-    goals: (params = {}) => apiService.get('/performance/goals', params)
-  },
-
-  // 培训管理
-  training: {
-    courses: (params = {}) => apiService.get('/training/courses', params),
-    enroll: (data) => apiService.post('/training/enroll', data),
-    records: (params = {}) => apiService.get('/training/records', params)
+  // 敬满
+  jingman: {
+    employees: {
+      list: (params = {}) => apiService.get('/jingman/employees', params),
+      create: (data) => apiService.post('/jingman/employees', data),
+      update: (id, data) => apiService.put(`/jingman/employees/${id}`, data)
+    },
+    welfare: {
+      list: (params = {}) => apiService.get('/jingman/welfare', params),
+      create: (data) => apiService.post('/jingman/welfare', data)
+    },
+    service: {
+      list: (params = {}) => apiService.get('/jingman/service', params),
+      create: (data) => apiService.post('/jingman/service', data)
+    },
+    support: {
+      list: (params = {}) => apiService.get('/jingman/support', params),
+      create: (data) => apiService.post('/jingman/support', data)
+    }
   }
 }
 

@@ -16,6 +16,11 @@ const router = new VueRouter({
       component: () => import('../pages/home/index.vue')
     },
     {
+      path: '/home-b2b',
+      name: 'HomeB2B',
+      component: () => import('../pages/home-b2b/index.vue')
+    },
+    {
       path: '/system-detail',
       name: 'SystemDetail',
       component: () => import('../pages/system-detail/index.vue')

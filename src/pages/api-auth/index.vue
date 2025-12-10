@@ -305,7 +305,7 @@ export default {
       approvedApps: [
         {
           id: 'app-001',
-          name: '人力资源管理系统',
+          name: '人力资源管理',
           siteUrl: 'https://hr.company.com',
           description: '企业内部人力资源管理平台，用于员工信息管理、考勤统计、薪资核算等',
           appKey: 'ak_1234567890abcdef',
@@ -343,15 +343,15 @@ export default {
       // API分类数据
       apiCategories: [
         {
-          key: 'employee',
-          name: '员工管理',
-          icon: 'user',
+          key: 'groupEmployment',
+          name: '集团用工',
+          icon: 'usergroup',
           apis: [
             { 
-              id: 'emp-list', 
+              id: 'group-emp-list', 
               method: 'GET', 
-              name: '/api/employees', 
-              description: '获取员工列表',
+              name: '/api/group/employees', 
+              description: '获取集团员工列表',
               fields: [
                 { name: 'id', type: 'string', description: '员工ID', required: true },
                 { name: 'name', type: 'string', description: '员工姓名', required: true },
@@ -364,173 +364,179 @@ export default {
               ]
             },
             { 
-              id: 'emp-detail', 
+              id: 'group-contract', 
               method: 'GET', 
-              name: '/api/employees/{id}', 
-              description: '获取员工详情',
+              name: '/api/group/contracts', 
+              description: '集团劳动合同管理',
               fields: [
-                { name: 'id', type: 'string', description: '员工ID', required: true },
-                { name: 'name', type: 'string', description: '员工姓名', required: true },
-                { name: 'email', type: 'string', description: '邮箱地址', required: false },
-                { name: 'phone', type: 'string', description: '手机号码', required: false },
-                { name: 'department', type: 'object', description: '部门信息', required: false },
-                { name: 'position', type: 'object', description: '职位信息', required: false },
-                { name: 'hireDate', type: 'date', description: '入职日期', required: false },
-                { name: 'birthDate', type: 'date', description: '出生日期', required: false },
-                { name: 'address', type: 'string', description: '家庭住址', required: false },
-                { name: 'emergencyContact', type: 'object', description: '紧急联系人', required: false },
-                { name: 'status', type: 'string', description: '员工状态', required: true }
+                { name: 'id', type: 'string', description: '合同ID', required: true },
+                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
+                { name: 'contractType', type: 'string', description: '合同类型', required: true },
+                { name: 'startDate', type: 'date', description: '合同开始日期', required: true },
+                { name: 'endDate', type: 'date', description: '合同结束日期', required: false },
+                { name: 'status', type: 'string', description: '合同状态', required: true }
               ]
             },
             { 
-              id: 'emp-create', 
+              id: 'group-transfer', 
               method: 'POST', 
-              name: '/api/employees', 
-              description: '创建新员工',
+              name: '/api/group/transfer', 
+              description: '集团内部调动',
+              fields: [
+                { name: 'id', type: 'string', description: '调动ID', required: true },
+                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
+                { name: 'fromDepartment', type: 'string', description: '原部门', required: true },
+                { name: 'toDepartment', type: 'string', description: '目标部门', required: true },
+                { name: 'transferDate', type: 'date', description: '调动日期', required: true },
+                { name: 'status', type: 'string', description: '调动状态', required: true }
+              ]
+            }
+          ]
+        },
+        {
+          key: 'informalEmployment',
+          name: '非正式用工',
+          icon: 'user',
+          apis: [
+            { 
+              id: 'temp-emp-list', 
+              method: 'GET', 
+              name: '/api/temp/employees', 
+              description: '获取临时工列表',
+              fields: [
+                { name: 'id', type: 'string', description: '临时工ID', required: true },
+                { name: 'name', type: 'string', description: '姓名', required: true },
+                { name: 'phone', type: 'string', description: '联系电话', required: true },
+                { name: 'workType', type: 'string', description: '工作类型', required: true },
+                { name: 'startDate', type: 'date', description: '开始日期', required: true },
+                { name: 'endDate', type: 'date', description: '结束日期', required: false },
+                { name: 'status', type: 'string', description: '状态', required: true }
+              ]
+            },
+            { 
+              id: 'outsource-manage', 
+              method: 'GET', 
+              name: '/api/outsource/manage', 
+              description: '外包人员管理',
+              fields: [
+                { name: 'id', type: 'string', description: '外包人员ID', required: true },
+                { name: 'name', type: 'string', description: '姓名', required: true },
+                { name: 'company', type: 'string', description: '外包公司', required: true },
+                { name: 'project', type: 'string', description: '项目名称', required: false },
+                { name: 'contractPeriod', type: 'string', description: '合同期限', required: false },
+                { name: 'status', type: 'string', description: '状态', required: true }
+              ]
+            },
+            { 
+              id: 'flexible-work', 
+              method: 'POST', 
+              name: '/api/flexible/work', 
+              description: '灵活用工管理',
+              fields: [
+                { name: 'id', type: 'string', description: '灵活用工ID', required: true },
+                { name: 'workerId', type: 'string', description: '工作者ID', required: true },
+                { name: 'workType', type: 'string', description: '工作类型', required: true },
+                { name: 'workHours', type: 'number', description: '工作时长', required: false },
+                { name: 'payRate', type: 'number', description: '薪酬标准', required: false },
+                { name: 'status', type: 'string', description: '状态', required: true }
+              ]
+            }
+          ]
+        },
+        {
+          key: 'compliance',
+          name: '合规',
+          icon: 'secured',
+          apis: [
+            { 
+              id: 'legal-check', 
+              method: 'GET', 
+              name: '/api/compliance/legal', 
+              description: '法律合规检查',
+              fields: [
+                { name: 'id', type: 'string', description: '检查ID', required: true },
+                { name: 'checkType', type: 'string', description: '检查类型', required: true },
+                { name: 'checkDate', type: 'date', description: '检查日期', required: true },
+                { name: 'result', type: 'string', description: '检查结果', required: true },
+                { name: 'riskLevel', type: 'string', description: '风险等级', required: false },
+                { name: 'recommendations', type: 'array', description: '建议措施', required: false }
+              ]
+            },
+            { 
+              id: 'audit-report', 
+              method: 'POST', 
+              name: '/api/compliance/audit', 
+              description: '合规审计报告',
+              fields: [
+                { name: 'id', type: 'string', description: '审计ID', required: true },
+                { name: 'auditPeriod', type: 'string', description: '审计周期', required: true },
+                { name: 'auditScope', type: 'string', description: '审计范围', required: true },
+                { name: 'findings', type: 'array', description: '审计发现', required: false },
+                { name: 'complianceScore', type: 'number', description: '合规评分', required: true },
+                { name: 'status', type: 'string', description: '审计状态', required: true }
+              ]
+            },
+            { 
+              id: 'risk-assess', 
+              method: 'GET', 
+              name: '/api/compliance/risk', 
+              description: '风险评估管理',
+              fields: [
+                { name: 'id', type: 'string', description: '风险ID', required: true },
+                { name: 'riskType', type: 'string', description: '风险类型', required: true },
+                { name: 'riskLevel', type: 'string', description: '风险等级', required: true },
+                { name: 'probability', type: 'number', description: '发生概率', required: false },
+                { name: 'impact', type: 'number', description: '影响程度', required: false },
+                { name: 'mitigationPlan', type: 'string', description: '缓解计划', required: false }
+              ]
+            }
+          ]
+        },
+        {
+          key: 'jingman',
+          name: '敬满',
+          icon: 'heart',
+          apis: [
+            { 
+              id: 'jm-employee', 
+              method: 'GET', 
+              name: '/api/jingman/employees', 
+              description: '敬满员工管理',
               fields: [
                 { name: 'id', type: 'string', description: '员工ID', required: true },
                 { name: 'name', type: 'string', description: '员工姓名', required: true },
-                { name: 'message', type: 'string', description: '创建结果消息', required: true }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'organization',
-          name: '组织架构',
-          icon: 'chart',
-          apis: [
-            { 
-              id: 'dept-list', 
-              method: 'GET', 
-              name: '/api/departments', 
-              description: '获取部门列表',
-              fields: [
-                { name: 'id', type: 'string', description: '部门ID', required: true },
-                { name: 'name', type: 'string', description: '部门名称', required: true },
-                { name: 'parentId', type: 'string', description: '上级部门ID', required: false },
-                { name: 'manager', type: 'object', description: '部门负责人', required: false },
-                { name: 'employeeCount', type: 'number', description: '员工数量', required: false },
-                { name: 'description', type: 'string', description: '部门描述', required: false }
+                { name: 'age', type: 'number', description: '年龄', required: false },
+                { name: 'serviceYears', type: 'number', description: '服务年限', required: false },
+                { name: 'specialNeeds', type: 'array', description: '特殊需求', required: false },
+                { name: 'careLevel', type: 'string', description: '关怀等级', required: false }
               ]
             },
             { 
-              id: 'pos-list', 
-              method: 'GET', 
-              name: '/api/positions', 
-              description: '获取职位信息',
+              id: 'jm-welfare', 
+              method: 'POST', 
+              name: '/api/jingman/welfare', 
+              description: '敬满福利管理',
               fields: [
-                { name: 'id', type: 'string', description: '职位ID', required: true },
-                { name: 'title', type: 'string', description: '职位名称', required: true },
-                { name: 'level', type: 'string', description: '职级', required: false },
-                { name: 'department', type: 'string', description: '所属部门', required: false },
-                { name: 'description', type: 'string', description: '职位描述', required: false },
-                { name: 'requirements', type: 'array', description: '任职要求', required: false }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'attendance',
-          name: '考勤管理',
-          icon: 'time',
-          apis: [
-            { 
-              id: 'att-records', 
-              method: 'GET', 
-              name: '/api/attendance/records', 
-              description: '获取考勤记录',
-              fields: [
-                { name: 'id', type: 'string', description: '记录ID', required: true },
+                { name: 'id', type: 'string', description: '福利ID', required: true },
                 { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'employeeName', type: 'string', description: '员工姓名', required: true },
-                { name: 'date', type: 'date', description: '考勤日期', required: true },
-                { name: 'checkInTime', type: 'datetime', description: '签到时间', required: false },
-                { name: 'checkOutTime', type: 'datetime', description: '签退时间', required: false },
-                { name: 'status', type: 'string', description: '考勤状态', required: true },
-                { name: 'workHours', type: 'number', description: '工作时长', required: false }
+                { name: 'welfareType', type: 'string', description: '福利类型', required: true },
+                { name: 'amount', type: 'number', description: '福利金额', required: false },
+                { name: 'effectiveDate', type: 'date', description: '生效日期', required: true },
+                { name: 'status', type: 'string', description: '福利状态', required: true }
               ]
             },
             { 
-              id: 'att-summary', 
+              id: 'jm-service', 
               method: 'GET', 
-              name: '/api/attendance/summary', 
-              description: '考勤统计',
+              name: '/api/jingman/service', 
+              description: '敬满服务管理',
               fields: [
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'period', type: 'string', description: '统计周期', required: true },
-                { name: 'totalDays', type: 'number', description: '总天数', required: true },
-                { name: 'workDays', type: 'number', description: '出勤天数', required: true },
-                { name: 'absentDays', type: 'number', description: '缺勤天数', required: false },
-                { name: 'lateDays', type: 'number', description: '迟到天数', required: false },
-                { name: 'leaveDays', type: 'number', description: '请假天数', required: false }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'compensation',
-          name: '薪酬福利',
-          icon: 'money-circle',
-          apis: [
-            { 
-              id: 'sal-info', 
-              method: 'GET', 
-              name: '/api/salary', 
-              description: '获取薪资信息',
-              fields: [
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'period', type: 'string', description: '薪资周期', required: true },
-                { name: 'baseSalary', type: 'number', description: '基本工资', required: true },
-                { name: 'bonus', type: 'number', description: '奖金', required: false },
-                { name: 'allowance', type: 'number', description: '津贴', required: false },
-                { name: 'deduction', type: 'number', description: '扣款', required: false },
-                { name: 'totalSalary', type: 'number', description: '实发工资', required: true }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'performance',
-          name: '绩效管理',
-          icon: 'chart-line',
-          apis: [
-            { 
-              id: 'perf-reviews', 
-              method: 'GET', 
-              name: '/api/performance/reviews', 
-              description: '获取绩效评估',
-              fields: [
-                { name: 'id', type: 'string', description: '评估ID', required: true },
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'period', type: 'string', description: '评估周期', required: true },
-                { name: 'score', type: 'number', description: '绩效得分', required: true },
-                { name: 'rating', type: 'string', description: '绩效等级', required: true },
-                { name: 'reviewer', type: 'string', description: '评估人', required: false },
-                { name: 'comments', type: 'string', description: '评估意见', required: false }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'training',
-          name: '培训发展',
-          icon: 'education',
-          apis: [
-            { 
-              id: 'train-courses', 
-              method: 'GET', 
-              name: '/api/training/courses', 
-              description: '获取培训课程',
-              fields: [
-                { name: 'id', type: 'string', description: '课程ID', required: true },
-                { name: 'title', type: 'string', description: '课程名称', required: true },
-                { name: 'category', type: 'string', description: '课程分类', required: false },
-                { name: 'instructor', type: 'string', description: '讲师', required: false },
-                { name: 'duration', type: 'number', description: '课程时长', required: false },
-                { name: 'startDate', type: 'date', description: '开始日期', required: false },
-                { name: 'capacity', type: 'number', description: '容纳人数', required: false },
-                { name: 'enrolled', type: 'number', description: '已报名人数', required: false }
+                { name: 'id', type: 'string', description: '服务ID', required: true },
+                { name: 'serviceType', type: 'string', description: '服务类型', required: true },
+                { name: 'serviceProvider', type: 'string', description: '服务提供方', required: false },
+                { name: 'serviceDate', type: 'date', description: '服务日期', required: true },
+                { name: 'beneficiaries', type: 'array', description: '受益人员', required: false },
+                { name: 'feedback', type: 'string', description: '服务反馈', required: false }
               ]
             }
           ]

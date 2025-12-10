@@ -3,7 +3,7 @@
     <!-- 头部信息 -->
     <div class="api-header">
       <t-button theme="default" variant="text" @click="$router.back()" class="back-btn">
-        <t-icon name="left" />返回系统详情
+        <t-icon name="left" />返回详情
       </t-button>
       <div class="api-title-section">
         <h1 class="api-title">{{ apiInfo.name }}</h1>
@@ -426,15 +426,26 @@ export default {
     
     testApiCall() {
       this.testing = true
-      // 模拟API调用测试
-      setTimeout(() => {
-        this.testResult = {
-          status: 200,
-          duration: Math.floor(Math.random() * 200) + 50,
-          data: this.apiInfo.responseExample || { code: 200, message: 'success', data: {} }
+      
+      // 构造完整的API URL（模拟实际的API地址）
+      const baseUrl = 'https://api.example.com'
+      const fullUrl = baseUrl + this.apiInfo.path
+      
+      // 跳转到API调试页面，传递当前API信息并锁定
+      this.$router.push({
+        path: '/api-debug',
+        query: {
+          url: fullUrl,
+          method: this.apiInfo.method,
+          apiName: this.apiInfo.name,
+          locked: 'true'  // 锁定模式，不可调整API
         }
+      })
+      
+      // 短暂延迟后重置loading状态
+      setTimeout(() => {
         this.testing = false
-      }, 1000)
+      }, 500)
     },
     
     resetTest() {

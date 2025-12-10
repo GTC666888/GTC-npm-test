@@ -328,14 +328,14 @@ class NotificationService {
   }
 
   /**
-   * 系统状态通知
+   * 状态通知
    */
   systemStatus(status, details) {
     const statusConfig = {
-      online: { theme: 'success', icon: 'check-circle', message: '系统正常' },
-      offline: { theme: 'danger', icon: 'close-circle', message: '系统离线' },
-      maintenance: { theme: 'warning', icon: 'time', message: '系统维护' },
-      error: { theme: 'danger', icon: 'error-circle', message: '系统错误' }
+      online: { theme: 'success', icon: 'check-circle', message: '服务正常' },
+      offline: { theme: 'danger', icon: 'close-circle', message: '服务离线' },
+      maintenance: { theme: 'warning', icon: 'time', message: '服务维护' },
+      error: { theme: 'danger', icon: 'error-circle', message: '服务错误' }
     }
 
     const config = statusConfig[status] || statusConfig.error

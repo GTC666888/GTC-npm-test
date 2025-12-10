@@ -678,6 +678,11 @@ export default {
         this.request.bodyType = 'json'
       }
       this.updateLineCount()
+    },
+    
+    // 关闭页面
+    handleClose() {
+      this.$router.back()
     }
   },
   mounted() {
