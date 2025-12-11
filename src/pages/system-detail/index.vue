@@ -2,9 +2,10 @@
   <div class="system-detail-container">
     <!-- 头部信息 -->
     <div class="system-header">
-      <a-button type="link" @click="$router.back()" class="back-btn">
-        <t-icon name="left" />返回首页
-      </a-button>
+      <t-button variant="text" @click="$router.back()" class="back-btn">
+        <template #icon><t-icon name="chevron-left" /></template>
+        返回首页
+      </t-button>
       <h1 class="system-title">{{ systemInfo.name }}</h1>
       <div class="system-stats">
         <span class="api-count">API总数: {{ systemInfo.count }}</span>
@@ -81,9 +82,6 @@ export default {
         api.description.toLowerCase().includes(keyword)
       )
     }
-  },
-  mounted() {
-    this.loadSystemData()
   },
   watch: {
     '$route.query.systemType': {
@@ -250,7 +248,14 @@ export default {
     },
     
     viewApiDetail(api) {
-      this.$message.info(`查看API详情: ${api.name}`)
+      // 跳转到API详情页面
+      this.$router.push({
+        name: 'ApiDetail',
+        query: { 
+          apiId: api.id,
+          systemType: this.$route.query.systemType
+        }
+      })
     }
   }
 }

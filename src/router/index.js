@@ -9,6 +9,14 @@ const baseURL = import.meta.env.VITE_BASE_URL || '/'
 const router = new VueRouter({
   mode: 'history',
   base: baseURL,
+  scrollBehavior(to, from, savedPosition) {
+    // 如果有保存的位置（浏览器前进/后退），使用保存的位置
+    if (savedPosition) {
+      return savedPosition
+    }
+    // 否则滚动到页面顶部
+    return { x: 0, y: 0 }
+  },
   routes: [
     {
       path: '/',
@@ -55,6 +63,16 @@ const router = new VueRouter({
       path: '/api-docs',
       name: 'ApiDocs',
       component: () => import('../pages/api-docs/index.vue')
+    },
+    {
+      path: '/my-apps',
+      name: 'MyApps',
+      component: () => import('../pages/my-apps/index.vue')
+    },
+    {
+      path: '/app-detail',
+      name: 'AppDetail',
+      component: () => import('../pages/app-detail/index.vue')
     }
   ]
 })

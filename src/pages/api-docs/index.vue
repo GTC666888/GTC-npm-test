@@ -67,7 +67,7 @@
       </div>
 
       <!-- 右侧文档内容 -->
-      <div class="docs-content" ref="docsContent" @scroll="handleScroll">
+      <div class="docs-content" ref="docsContent">
         <!-- 分类区块 -->
         <div
           v-for="category in filteredCategories"
@@ -256,6 +256,12 @@ export default {
       }).filter(category => category.apis.length > 0)
     }
   },
+  mounted() {
+    window.addEventListener('scroll', this.handleScroll)
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.handleScroll)
+  },
   methods: {
     goBack() {
       this.$router.push('/')
@@ -268,17 +274,14 @@ export default {
       }
     },
     handleScroll() {
-      const content = this.$refs.docsContent
-      if (!content) return
-      
-      const scrollTop = content.scrollTop
+      const scrollTop = window.scrollY || document.documentElement.scrollTop
       let currentCategory = 'groupEmployment'
       
       this.categories.forEach(category => {
         const ref = this.$refs['category-' + category.key]
         if (ref && ref[0]) {
-          const offsetTop = ref[0].offsetTop - content.offsetTop
-          if (scrollTop >= offsetTop - 100) {
+          const rect = ref[0].getBoundingClientRect()
+          if (rect.top <= 150) {
             currentCategory = category.key
           }
         }
@@ -506,8 +509,6 @@ export default {
 .docs-content {
   flex: 1;
   min-width: 0;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
 }
 
 /* 分类区块 */
@@ -524,6 +525,9 @@ export default {
   gap: 20px;
   margin-bottom: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .category-icon {

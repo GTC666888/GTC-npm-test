@@ -30,7 +30,7 @@
       <div class="left-sidebar">
         <!-- 已申请应用模块 -->
         <div class="applied-apps-section">
-          <div class="guide-header">
+          <div class="guide-header clickable" @click="$router.push('/my-apps')">
             <h3>已申请应用</h3>
             <p>我的应用列表</p>
           </div>
@@ -177,33 +177,31 @@
           </div>
         </div>
 
-        <!-- Tooltip teleport to body -->
-        <teleport to="body">
-          <div class="flowchart-tooltip" 
-               v-show="tooltipVisible" 
-               :style="tooltipStyle">
-            <template v-if="activeTooltip === 'admin'">
-              <div class="tooltip-header">
-                <t-icon name="check-circle" size="16px" />
-                <span>审核通过后</span>
-              </div>
-              <ul class="tooltip-list">
-                <li><t-icon name="key" size="14px" />提供 appId / token</li>
-                <li><t-icon name="file-paste" size="14px" />对接所需要素</li>
-              </ul>
-            </template>
-            <template v-else-if="activeTooltip === 'connect'">
-              <div class="tooltip-header">
-                <t-icon name="file-code" size="16px" />
-                <span>开始对接</span>
-              </div>
-              <ul class="tooltip-list">
-                <li><t-icon name="book" size="14px" />查阅对接文档</li>
-                <li><t-icon name="code" size="14px" />调用API接口</li>
-              </ul>
-            </template>
-          </div>
-        </teleport>
+        <!-- Tooltip -->
+        <div class="flowchart-tooltip" 
+             v-show="tooltipVisible" 
+             :style="tooltipStyle">
+          <template v-if="activeTooltip === 'admin'">
+            <div class="tooltip-header">
+              <t-icon name="check-circle" size="16px" />
+              <span>审核通过后</span>
+            </div>
+            <ul class="tooltip-list">
+              <li><t-icon name="key" size="14px" />提供 appId / token</li>
+              <li><t-icon name="file-paste" size="14px" />对接所需要素</li>
+            </ul>
+          </template>
+          <template v-else-if="activeTooltip === 'connect'">
+            <div class="tooltip-header">
+              <t-icon name="file-code" size="16px" />
+              <span>开始对接</span>
+            </div>
+            <ul class="tooltip-list">
+              <li><t-icon name="book" size="14px" />查阅对接文档</li>
+              <li><t-icon name="code" size="14px" />调用API接口</li>
+            </ul>
+          </template>
+        </div>
 
         <!-- API分类展示 -->
         <div class="api-categories">
@@ -714,7 +712,16 @@ System.out.println(response.body());`
       this.expandedCategories[category] = !this.expandedCategories[category];
     },
     handleViewApp(app) {
-      this.$message.info(`查看应用: ${app.name}`);
+      if (app.status === 'approved') {
+        // 已通过的应用跳转到详情页
+        this.$router.push({
+          path: '/app-detail',
+          query: { appId: app.id }
+        });
+      } else {
+        // 审核中的应用跳转到应用列表
+        this.$router.push('/my-apps');
+      }
     },
     handleViewDocs() {
       this.$router.push('/api-docs');
@@ -1739,6 +1746,15 @@ System.out.println(response.body());`
   margin-bottom: 24px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--td-component-border);
+}
+
+.guide-header.clickable {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.guide-header.clickable:hover {
+  opacity: 0.8;
 }
 
 .guide-header h3 {

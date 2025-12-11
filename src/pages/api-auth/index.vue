@@ -17,16 +17,22 @@
     <div class="auth-content">
       <!-- 步骤指示器 -->
       <div class="steps-container">
-        <t-steps :current="currentStep" theme="dot">
-          <t-step-item title="选择应用" content="选择需要授权的应用" />
+        <t-steps :current="displayStep" theme="dot">
+          <t-step-item v-if="!fromAppDetail" title="选择应用" content="选择需要授权的应用" />
           <t-step-item title="选择API" content="选择需要访问的API接口" />
           <t-step-item title="配置字段" content="自定义API返回字段" />
           <t-step-item title="提交申请" content="确认并提交授权申请" />
         </t-steps>
+        <!-- 从应用详情进入时显示当前应用信息 -->
+        <div v-if="fromAppDetail && selectedApp" class="current-app-info">
+          <span class="label">当前应用：</span>
+          <span class="app-name">{{ selectedApp.name }}</span>
+          <t-tag theme="success" size="small">已审核</t-tag>
+        </div>
       </div>
 
       <!-- 步骤1: 选择应用 -->
-      <div v-show="currentStep === 0" class="step-panel">
+      <div v-show="currentStep === 0 && !fromAppDetail" class="step-panel">
         <div class="panel-header">
           <h2>选择应用</h2>
           <p>请选择一个已通过审核的应用进行API授权</p>
@@ -294,7 +300,7 @@
 import { Icon as TIcon } from 'tdesign-icons-vue'
 import { MessagePlugin } from 'tdesign-vue'
 import { getApiCategoriesArray, getTotalApiCount as getTotal, getApiById as findApiById } from '@/constants/erCategories'
-import { getApprovedAppsList } from '@/constants/approvedApps'
+import { getApprovedAppsList, getAppById } from '@/constants/approvedApps'
 
 export default {
   name: 'ApiAuth',
@@ -329,12 +335,36 @@ export default {
       },
       
       // API分类数据 - 使用公共常量
-      apiCategories: getApiCategoriesArray()
+      apiCategories: getApiCategoriesArray(),
+      
+      // 是否从应用详情页进入（跳过第一步）
+      fromAppDetail: false
+    }
+  },
+  mounted() {
+    // 检查路由参数，如果有appId则自动选中应用并回显已绑定数据
+    const appId = this.$route.query.appId
+    if (appId) {
+      const app = getAppById(appId)
+      if (app && app.status === 'approved') {
+        this.selectedApp = app
+        this.loadBindingData(app)
+        // 标记从应用详情进入，直接跳到第二步
+        this.fromAppDetail = true
+        this.currentStep = 1
+      }
     }
   },
   computed: {
     totalApiCount() {
       return getTotal()
+    },
+    // 显示的步骤索引（从应用详情进入时步骤数减1）
+    displayStep() {
+      if (this.fromAppDetail) {
+        return this.currentStep - 1
+      }
+      return this.currentStep
     },
     filteredApiCategories() {
       let categories = this.apiCategories
@@ -363,6 +393,23 @@ export default {
     // 选择应用
     selectApp(app) {
       this.selectedApp = app
+      // 加载已绑定数据
+      this.loadBindingData(app)
+    },
+    
+    // 加载应用已绑定的API和字段数据
+    loadBindingData(app) {
+      if (app.bindingApis && app.bindingApis.length > 0) {
+        // 清空现有选择
+        this.selectedApis = []
+        this.apiFieldSelections = {}
+        
+        // 回显已绑定的API和字段
+        app.bindingApis.forEach(binding => {
+          this.selectedApis.push(binding.apiId)
+          this.$set(this.apiFieldSelections, binding.apiId, [...binding.fields])
+        })
+      }
     },
     
     // 步骤导航
@@ -390,6 +437,11 @@ export default {
     },
     
     prevStep() {
+      // 从应用详情进入时，第二步返回应用详情页
+      if (this.fromAppDetail && this.currentStep === 1) {
+        this.$router.back()
+        return
+      }
       this.currentStep--
     },
     
@@ -577,6 +629,26 @@ export default {
   border-radius: 8px;
   margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.current-app-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.current-app-info .label {
+  color: #8c8c8c;
+  font-size: 14px;
+}
+
+.current-app-info .app-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #262626;
 }
 
 /* 步骤面板 */

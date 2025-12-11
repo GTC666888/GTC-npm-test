@@ -14,7 +14,31 @@ export const APPROVED_APPS = [
     status: 'approved',
     icon: 'user-circle',
     statusClass: 'approved',
-    statusText: '已通过'
+    statusText: '已通过',
+    // 已绑定的API和字段 - 使用erCategories中的真实API ID
+    bindingApis: [
+      {
+        apiId: 'group-emp-list',
+        apiName: '/api/group/employees',
+        apiMethod: 'GET',
+        apiDescription: '获取集团员工列表',
+        fields: ['employeeId', 'name', 'department', 'position', 'status']
+      },
+      {
+        apiId: 'group-contract',
+        apiName: '/api/group/contracts',
+        apiMethod: 'GET',
+        apiDescription: '集团劳动合同管理',
+        fields: ['contractId', 'employeeId', 'contractType', 'startDate', 'endDate']
+      },
+      {
+        apiId: 'group-dept',
+        apiName: '/api/group/departments',
+        apiMethod: 'GET',
+        apiDescription: '部门信息查询',
+        fields: ['deptId', 'deptName', 'parentDept']
+      }
+    ]
   },
   {
     id: 'app-002',
@@ -26,7 +50,23 @@ export const APPROVED_APPS = [
     status: 'approved',
     icon: 'mobile',
     statusClass: 'approved',
-    statusText: '已通过'
+    statusText: '已通过',
+    bindingApis: [
+      {
+        apiId: 'group-onboard',
+        apiName: '/api/group/onboard',
+        apiMethod: 'POST',
+        apiDescription: '入职办理',
+        fields: ['candidateId', 'entryDate', 'department', 'position']
+      },
+      {
+        apiId: 'group-offboard',
+        apiName: '/api/group/offboard',
+        apiMethod: 'POST',
+        apiDescription: '离职办理',
+        fields: ['employeeId', 'lastDay', 'reason']
+      }
+    ]
   },
   {
     id: 'app-003',
@@ -38,7 +78,30 @@ export const APPROVED_APPS = [
     status: 'approved',
     icon: 'chart-pie',
     statusClass: 'approved',
-    statusText: '已通过'
+    statusText: '已通过',
+    bindingApis: [
+      {
+        apiId: 'group-history',
+        apiName: '/api/group/history',
+        apiMethod: 'GET',
+        apiDescription: '员工履历查询',
+        fields: ['employeeId', 'startDate', 'endDate']
+      },
+      {
+        apiId: 'group-position',
+        apiName: '/api/group/positions',
+        apiMethod: 'GET',
+        apiDescription: '职位信息查询',
+        fields: ['positionId', 'positionName', 'level']
+      },
+      {
+        apiId: 'group-rank',
+        apiName: '/api/group/ranks',
+        apiMethod: 'GET',
+        apiDescription: '职级信息查询',
+        fields: ['rankId', 'rankName']
+      }
+    ]
   },
   {
     id: 'app-004',
@@ -50,7 +113,8 @@ export const APPROVED_APPS = [
     status: 'pending',
     icon: 'user-add',
     statusClass: 'pending',
-    statusText: '审核中'
+    statusText: '审核中',
+    bindingApis: []
   },
   {
     id: 'app-005',
@@ -62,7 +126,8 @@ export const APPROVED_APPS = [
     status: 'pending',
     icon: 'book-open',
     statusClass: 'pending',
-    statusText: '审核中'
+    statusText: '审核中',
+    bindingApis: []
   }
 ]
 
