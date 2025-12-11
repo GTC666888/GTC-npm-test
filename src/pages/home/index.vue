@@ -68,60 +68,143 @@
             <p>API申请流程指引</p>
           </div>
           
-          <div class="process-flow">
-            <div class="process-step">
-              <div class="step-icon">
-                <t-icon name="file-add" />
+          <div class="flowchart" ref="flowchart">
+            <!-- 主流程 -->
+            <div class="flowchart-row main-row" ref="flowchartRow">
+              <!-- 申请人 -->
+              <div class="flow-node start-node">
+                <div class="node-circle">
+                  <t-icon name="user" size="28px" />
+                </div>
+                <span class="node-label">申请人</span>
               </div>
-              <div class="step-content">
-                <h4>1. 申请应用</h4>
-                <p>创建应用获取AppKey</p>
+              
+              <div class="flow-connector">
+                <div class="connector-line"></div>
+                <t-icon name="chevron-right" class="connector-arrow" />
+              </div>
+              
+              <!-- 判断：业务系统是否已接入 -->
+              <div class="flow-node decision-node" ref="decisionNode">
+                <div class="node-diamond">
+                  <div class="diamond-content">
+                    <t-icon name="help-circle" size="20px" />
+                    <span>业务系统<br/>是否已接入<br/>ER领域主数据</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flow-connector with-label">
+                <div class="connector-line"></div>
+                <span class="connector-label no-label">否</span>
+                <t-icon name="chevron-right" class="connector-arrow" />
+              </div>
+              
+              <!-- 申请接入 -->
+              <div class="flow-node process-node clickable" ref="applyNode" @click="handleFlowNodeClick('apply')">
+                <div class="node-card blue">
+                  <div class="card-icon">
+                    <t-icon name="file-add" size="24px" />
+                  </div>
+                  <span class="card-title">申请接入</span>
+                </div>
+              </div>
+              
+              <div class="flow-connector">
+                <div class="connector-line"></div>
+                <t-icon name="chevron-right" class="connector-arrow" />
+              </div>
+              
+              <!-- 选择&提交接口+字段 -->
+              <div class="flow-node process-node clickable" ref="submitNode" @click="handleFlowNodeClick('submit')">
+                <div class="node-card blue">
+                  <div class="card-icon">
+                    <t-icon name="check-double" size="24px" />
+                  </div>
+                  <span class="card-title">选择&提交</span>
+                  <span class="card-subtitle">接口+字段</span>
+                </div>
+              </div>
+              
+              <div class="flow-connector">
+                <div class="connector-line"></div>
+                <t-icon name="chevron-right" class="connector-arrow" />
+              </div>
+              
+              <!-- 管理员审核 -->
+              <div class="flow-node process-node"
+                   @mouseenter="showTooltip($event, 'admin')" 
+                   @mouseleave="hideTooltip">
+                <div class="node-card green">
+                  <div class="card-icon">
+                    <t-icon name="user-checked" size="24px" />
+                  </div>
+                  <span class="card-title">管理员审核</span>
+                </div>
+              </div>
+              
+              <div class="flow-connector">
+                <div class="connector-line"></div>
+                <t-icon name="chevron-right" class="connector-arrow" />
+              </div>
+              
+              <!-- 对接 -->
+              <div class="flow-node process-node clickable"
+                   @click="handleFlowNodeClick('debug')"
+                   @mouseenter="showTooltip($event, 'connect')" 
+                   @mouseleave="hideTooltip">
+                <div class="node-card orange">
+                  <div class="card-icon">
+                    <t-icon name="link" size="24px" />
+                  </div>
+                  <span class="card-title">对接</span>
+                </div>
               </div>
             </div>
             
-            <div class="process-arrow">
-              <t-icon name="arrow-right" />
-            </div>
-            
-            <div class="process-step">
-              <div class="step-icon">
-                <t-icon name="check-circle" />
+            <!-- 分支线：是 -->
+            <div class="flowchart-branch" :style="branchStyle">
+              <div class="branch-down">
+                <div class="branch-vertical-line"></div>
               </div>
-              <div class="step-content">
-                <h4>2. 管理者审批</h4>
-                <p>等待管理员审核通过</p>
+              <div class="branch-horizontal-line" :style="{ width: branchHorizontalWidth + 'px' }">
+                <span class="branch-label">是</span>
               </div>
-            </div>
-            
-            <div class="process-arrow">
-              <t-icon name="arrow-right" />
-            </div>
-            
-            <div class="process-step">
-              <div class="step-icon">
-                <t-icon name="precise-monitor" />
-              </div>
-              <div class="step-content">
-                <h4>3. 勾选接口与字段</h4>
-                <p>选择接口并配置字段权限</p>
-              </div>
-            </div>
-            
-            <div class="process-arrow">
-              <t-icon name="arrow-right" />
-            </div>
-            
-            <div class="process-step">
-              <div class="step-icon">
-                <t-icon name="play-circle" />
-              </div>
-              <div class="step-content">
-                <h4>4. 模拟调用接口</h4>
-                <p>在线调试验证接口</p>
+              <div class="branch-up">
+                <div class="branch-vertical-up"></div>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Tooltip teleport to body -->
+        <teleport to="body">
+          <div class="flowchart-tooltip" 
+               v-show="tooltipVisible" 
+               :style="tooltipStyle">
+            <template v-if="activeTooltip === 'admin'">
+              <div class="tooltip-header">
+                <t-icon name="check-circle" size="16px" />
+                <span>审核通过后</span>
+              </div>
+              <ul class="tooltip-list">
+                <li><t-icon name="key" size="14px" />提供 appId</li>
+                <li><t-icon name="lock-on" size="14px" />提供 token</li>
+                <li><t-icon name="file-paste" size="14px" />对接所需要素</li>
+              </ul>
+            </template>
+            <template v-else-if="activeTooltip === 'connect'">
+              <div class="tooltip-header">
+                <t-icon name="file-code" size="16px" />
+                <span>开始对接</span>
+              </div>
+              <ul class="tooltip-list">
+                <li><t-icon name="book" size="14px" />查阅对接文档</li>
+                <li><t-icon name="code" size="14px" />调用API接口</li>
+              </ul>
+            </template>
+          </div>
+        </teleport>
 
         <!-- API概览统计 -->
         <div class="api-overview">
@@ -422,6 +505,21 @@ export default {
   data() {
     return {
       activeTab: 'curl',
+      
+      // Tooltip状态
+      tooltipVisible: false,
+      activeTooltip: '',
+      tooltipStyle: {
+        top: '0px',
+        left: '0px'
+      },
+      
+      // 分支线样式
+      branchStyle: {
+        left: '0px',
+        top: '0px'
+      },
+      branchHorizontalWidth: 300,
       
       // 分类展开状态
       expandedCategories: {
@@ -739,6 +837,56 @@ System.out.println(response.body());`
   methods: {
     handleGetStarted() {
       this.$message.success('跳转到快速开始指南');
+    },
+    showTooltip(event, type) {
+      const rect = event.currentTarget.getBoundingClientRect();
+      this.activeTooltip = type;
+      this.tooltipStyle = {
+        top: `${rect.bottom + 12}px`,
+        left: `${rect.left + rect.width / 2}px`
+      };
+      this.tooltipVisible = true;
+    },
+    hideTooltip() {
+      this.tooltipVisible = false;
+    },
+    handleFlowNodeClick(type) {
+      const routes = {
+        apply: '/app-apply',
+        submit: '/api-auth',
+        debug: '/api-debug'
+      };
+      if (routes[type]) {
+        this.$router.push(routes[type]);
+      }
+    },
+    calculateBranchPosition() {
+      this.$nextTick(() => {
+        const flowchart = this.$refs.flowchart;
+        const decisionNode = this.$refs.decisionNode;
+        const submitNode = this.$refs.submitNode;
+        
+        if (!flowchart || !decisionNode || !submitNode) return;
+        
+        const flowchartRect = flowchart.getBoundingClientRect();
+        const decisionRect = decisionNode.getBoundingClientRect();
+        const submitRect = submitNode.getBoundingClientRect();
+        
+        // 分支起点：判断节点底部中心
+        const branchLeft = decisionRect.left - flowchartRect.left + decisionRect.width / 2;
+        const branchTop = decisionRect.top - flowchartRect.top + decisionRect.height - 10;
+        
+        // 分支终点：选择&提交节点顶部中心
+        const endX = submitRect.left - flowchartRect.left + submitRect.width / 2;
+        
+        // 计算水平线宽度
+        this.branchHorizontalWidth = Math.abs(endX - branchLeft);
+        
+        this.branchStyle = {
+          left: branchLeft + 'px',
+          top: branchTop + 'px'
+        };
+      });
     },
     toggleCategory(category) {
       this.expandedCategories[category] = !this.expandedCategories[category];
@@ -1062,6 +1210,13 @@ System.out.println(response.body());`
     this.initApiCharts();
     // 初始化异常趋势图表
     this.initExceptionChart();
+    // 计算分支线位置
+    this.calculateBranchPosition();
+    // 监听窗口大小变化
+    window.addEventListener('resize', this.calculateBranchPosition);
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.calculateBranchPosition);
   }
 }
 </script>
@@ -1183,79 +1338,283 @@ System.out.println(response.body());`
   margin-bottom: 32px;
   background: white;
   border-radius: 12px;
-  padding: 32px;
+  padding: 24px 32px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: visible;
 }
 
 .dev-process-section .section-header {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-.process-flow {
+/* 流程图样式 */
+.flowchart {
+  position: relative;
+  padding: 16px 0 60px;
+  overflow-x: auto;
+  overflow-y: visible;
+  min-width: 100%;
+}
+
+.flowchart-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 0;
+  min-width: 800px;
+  overflow: visible;
 }
 
-.process-step {
-  flex: 1;
+.flow-node {
+  position: relative;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
-  padding: 20px 16px;
-  border-radius: 12px;
-  background: var(--td-bg-color-container);
-  border: 2px solid transparent;
+  overflow: visible;
 }
 
-.process-step .step-icon {
-  width: 56px;
-  height: 56px;
+/* 开始节点 - 圆形带图标 */
+.start-node .node-circle {
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.35);
 }
 
-.process-step .step-icon .t-icon {
-  font-size: 28px;
+.start-node .node-label {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 判断节点 - 菱形 */
+.decision-node {
+  padding: 10px;
+}
+
+.decision-node .node-diamond {
+  width: 110px;
+  height: 110px;
+  background: linear-gradient(135deg, #fffbe6 0%, #fff1b8 100%);
+  border: 2px solid #faad14;
+  transform: rotate(45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 10px rgba(250, 173, 20, 0.25);
+}
+
+.decision-node .diamond-content {
+  transform: rotate(-45deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.decision-node .diamond-content .t-icon {
+  color: #d48806;
+  font-size: 16px;
+}
+
+.decision-node .diamond-content span {
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.2;
+  color: #856404;
+}
+
+/* 处理节点 - 卡片样式 */
+.node-card {
+  min-width: 90px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.node-card:hover {
+  transform: translateY(-2px);
+}
+
+.flow-node.clickable {
+  cursor: pointer;
+}
+
+.flow-node.clickable .node-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.node-card .card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-card .card-icon .t-icon {
+  color: white;
+  font-size: 18px;
+}
+
+.node-card .card-title {
+  font-size: 13px;
+  font-weight: 600;
   color: white;
 }
 
-.process-step .step-content h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
-  color: var(--td-text-color-primary);
+.node-card .card-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: -2px;
 }
 
-.process-step .step-content p {
-  font-size: 13px;
-  color: var(--td-text-color-secondary);
-  margin: 0;
-  line-height: 1.4;
+.node-card.blue {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  box-shadow: 0 3px 10px rgba(24, 144, 255, 0.35);
 }
 
-.process-arrow {
+.node-card.green {
+  background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+  box-shadow: 0 3px 10px rgba(82, 196, 26, 0.35);
+}
+
+.node-card.orange {
+  background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
+  box-shadow: 0 3px 10px rgba(250, 140, 22, 0.35);
+}
+
+/* 连接线 */
+.flow-connector {
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: #0052d9;
-  font-size: 24px;
-  flex-shrink: 0;
+  position: relative;
+  flex: 1;
+  min-width: 20px;
 }
 
-.process-arrow .t-icon {
-  animation: arrowPulse 1.5s ease-in-out infinite;
+.connector-line {
+  width: 100%;
+  height: 2px;
+  background: #d9d9d9;
+  position: relative;
 }
 
-@keyframes arrowPulse {
-  0%, 100% { opacity: 0.5; transform: translateX(0); }
-  50% { opacity: 1; transform: translateX(4px); }
+.connector-line::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid #d9d9d9;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+.connector-arrow {
+  display: none;
+}
+
+.flow-connector.with-label {
+  width: 55px;
+}
+
+.connector-label {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 8px;
+}
+
+.connector-label.no-label {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* 分支线 */
+.flowchart-branch {
+  position: absolute;
+  display: flex;
+  align-items: stretch;
+}
+
+.branch-down {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.branch-vertical-line {
+  width: 2px;
+  height: 40px;
+  background: #d9d9d9;
+}
+
+.branch-horizontal-line {
+  height: 2px;
+  background: #d9d9d9;
+  align-self: flex-end;
+  position: relative;
+}
+
+.branch-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: #f6ffed;
+  color: #52c41a;
+  white-space: nowrap;
+}
+
+.branch-up {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.branch-vertical-up {
+  width: 2px;
+  flex: 1;
+  background: #d9d9d9;
+  position: relative;
+}
+
+.branch-vertical-up::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 6px solid #d9d9d9;
 }
 
 .category-grid {
@@ -1904,17 +2263,11 @@ System.out.println(response.body());`
     min-width: 200px;
   }
   
-  .process-flow {
-    flex-wrap: wrap;
-    gap: 16px;
+  .flowchart {
+    overflow-x: auto;
   }
   
-  .process-step {
-    flex: 1 1 calc(50% - 40px);
-    min-width: 180px;
-  }
-  
-  .process-arrow {
+  .flowchart-branch {
     display: none;
   }
 }
@@ -1946,18 +2299,92 @@ System.out.println(response.body());`
     grid-template-columns: 1fr;
   }
   
-  .process-flow {
-    flex-direction: column;
-    gap: 12px;
+  .flowchart {
+    padding: 20px 0 40px;
   }
   
-  .process-step {
-    flex: none;
-    width: 100%;
+  .flowchart-row {
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  
+  .flow-connector {
+    display: none;
+  }
+  
+  .flowchart-branch {
+    display: none;
+  }
+  
+  .node-tooltip {
+    display: none;
   }
   
   .dev-process-section {
     padding: 20px;
   }
+}
+</style>
+
+<!-- 全局tooltip样式（teleport到body需要非scoped样式） -->
+<style>
+.flowchart-tooltip {
+  position: fixed;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border: 1px solid #f0f0f0;
+  min-width: 160px;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.flowchart-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid white;
+}
+
+.flowchart-tooltip .tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.flowchart-tooltip .tooltip-header .t-icon {
+  color: #52c41a;
+}
+
+.flowchart-tooltip .tooltip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.flowchart-tooltip .tooltip-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+  padding: 4px 0;
+}
+
+.flowchart-tooltip .tooltip-list li .t-icon {
+  color: #1890ff;
 }
 </style>
