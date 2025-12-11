@@ -13,10 +13,28 @@
 
     <!-- API列表 -->
     <div class="api-list-section">
-      <h2 class="section-title">API列表</h2>
+      <div class="section-header">
+        <h2 class="section-title">API列表</h2>
+        <div class="search-box">
+          <t-input
+            v-model="searchKeyword"
+            placeholder="搜索API（URL或名称）"
+            clearable
+            @clear="searchKeyword = ''"
+          >
+            <template #prefix-icon>
+              <t-icon name="search" />
+            </template>
+          </t-input>
+        </div>
+      </div>
+      
+      <div class="search-result-info" v-if="searchKeyword">
+        <span>找到 {{ filteredApis.length }} 个匹配的API</span>
+      </div>
       
       <div class="api-table">
-        <div v-for="api in systemInfo.apis" :key="api.id" class="api-row">
+        <div v-for="api in filteredApis" :key="api.id" class="api-row">
           <div class="api-method" :class="api.method.toLowerCase()">{{ api.method }}</div>
           <div class="api-info">
             <div class="api-name">{{ api.name }}</div>
@@ -43,12 +61,25 @@ export default {
   },
   data() {
     return {
+      searchKeyword: '',
       systemInfo: {
         name: '',
         type: '',
         apis: [],
         count: 0
       }
+    }
+  },
+  computed: {
+    filteredApis() {
+      if (!this.searchKeyword) {
+        return this.systemInfo.apis
+      }
+      const keyword = this.searchKeyword.toLowerCase()
+      return this.systemInfo.apis.filter(api => 
+        api.name.toLowerCase().includes(keyword) || 
+        api.description.toLowerCase().includes(keyword)
+      )
     }
   },
   mounted() {
@@ -268,10 +299,30 @@ export default {
   border-radius: 8px;
 }
 
-.section-title {
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+}
+
+.section-title {
+  margin: 0;
   color: #262626;
   font-size: 18px;
+}
+
+.search-box {
+  width: 300px;
+}
+
+.search-result-info {
+  padding: 8px 12px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #666;
 }
 
 .api-table {

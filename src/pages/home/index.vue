@@ -4,8 +4,8 @@
     <div class="doc-header">
       <div class="header-content">
         <div class="logo-section">
-          <h1 class="doc-title">ER API Center</h1>
-          <p class="doc-subtitle">企业资源领域API集成平台</p>
+          <h1 class="doc-title">ER MainData Center</h1>
+          <p class="doc-subtitle">ER领域主数据API集成平台</p>
         </div>
         <div class="header-actions">
           <t-button theme="primary" @click="handleGetStarted">
@@ -26,13 +26,46 @@
 
     <!-- 主内容区域 -->
     <div class="main-content-wrapper">
-      <!-- 左侧主内容 -->
+      <!-- 左侧边栏 - 已申请应用 -->
+      <div class="left-sidebar">
+        <!-- 已申请应用模块 -->
+        <div class="applied-apps-section">
+          <div class="guide-header">
+            <h3>已申请应用</h3>
+            <p>我的应用列表</p>
+          </div>
+          
+          <div class="applied-apps-list">
+            <div class="app-item" v-for="app in appliedApps" :key="app.id" @click="handleViewApp(app)">
+              <div class="step-icon-large" :class="app.statusClass">
+                <t-icon :name="app.icon" size="24px" />
+              </div>
+              <div class="step-info">
+                <h4>{{ app.name }}</h4>
+                <p>{{ app.description }}</p>
+              </div>
+              <div class="app-status" :class="app.statusClass">{{ app.statusText }}</div>
+            </div>
+            <div class="empty-apps" v-if="appliedApps.length === 0">
+              <t-icon name="inbox" size="32px" />
+              <p>暂无申请的应用</p>
+            </div>
+          </div>
+          
+          <div class="apply-new-btn" @click="handleStepGuide('apply')">
+            <t-icon name="add" />
+            <span>申请新应用</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 中间主内容 -->
       <div class="main-content">
         <!-- 开发流程模块 -->
         <div class="dev-process-section">
           <div class="section-header">
-            <h2>开发流程</h2>
-            <p>API接入开发指引</p>
+            <h2>申请流程</h2>
+            <p>API申请流程指引</p>
           </div>
           
           <div class="process-flow">
@@ -276,50 +309,61 @@
       </div>
     </div>
       </div>
-      <!-- 左侧主内容结束 -->
+      <!-- 中间主内容结束 -->
 
-      <!-- 右侧固定开发者指南 -->
-      <div class="developer-guide-sidebar">
-        <div class="guide-header">
-          <h3>开发者指南</h3>
-          <p>快速开始使用API</p>
-        </div>
-        
-        <div class="guide-steps-vertical">
-          <div class="step-item" @click="handleStepGuide('apply')">
-            <div class="step-number">1</div>
-            <div class="step-info">
-              <h4>申请应用</h4>
-              <p>获取AppKey和AppSecret</p>
-            </div>
-            <t-icon name="chevron-right" />
+      <!-- 右侧固定区域 -->
+      <div class="right-sidebar">
+        <!-- 开发者指南 -->
+        <div class="developer-guide-sidebar">
+          <div class="guide-header">
+            <h3>开发者指南</h3>
+            <p>快速开始使用API</p>
           </div>
-
-          <div class="step-item" @click="handleStepGuide('auth')">
-            <div class="step-number">2</div>
-            <div class="step-info">
-              <h4>接口授权</h4>
-              <p>配置API访问权限</p>
+          
+          <div class="guide-steps-vertical">
+            <div class="step-item" @click="handleStepGuide('apply')">
+              <div class="step-icon-large">
+                <t-icon name="file-add" size="24px" />
+              </div>
+              <div class="step-info">
+                <h4>申请应用</h4>
+                <p>获取AppKey和AppSecret</p>
+              </div>
+              <t-icon name="chevron-right" />
             </div>
-            <t-icon name="chevron-right" />
-          </div>
 
-          <div class="step-item" @click="handleStepGuide('token')">
-            <div class="step-number">3</div>
-            <div class="step-info">
-              <h4>获取令牌</h4>
-              <p>获取Access Token</p>
+            <div class="step-item" @click="handleStepGuide('auth')">
+              <div class="step-icon-large">
+                <t-icon name="lock-on" size="24px" />
+              </div>
+              <div class="step-info">
+                <h4>接口授权</h4>
+                <p>配置API访问权限</p>
+              </div>
+              <t-icon name="chevron-right" />
             </div>
-            <t-icon name="chevron-right" />
-          </div>
 
-          <div class="step-item" @click="handleStepGuide('call')">
-            <div class="step-number">4</div>
-            <div class="step-info">
-              <h4>调用接口</h4>
-              <p>开始使用API</p>
+            <div class="step-item" @click="handleStepGuide('token')">
+              <div class="step-icon-large">
+                <t-icon name="secured" size="24px" />
+              </div>
+              <div class="step-info">
+                <h4>获取令牌</h4>
+                <p>获取Access Token</p>
+              </div>
+              <t-icon name="chevron-right" />
             </div>
-            <t-icon name="chevron-right" />
+
+            <div class="step-item" @click="handleStepGuide('call')">
+              <div class="step-icon-large">
+                <t-icon name="play-circle" size="24px" />
+              </div>
+              <div class="step-info">
+                <h4>调用接口</h4>
+                <p>开始使用API</p>
+              </div>
+              <t-icon name="chevron-right" />
+            </div>
           </div>
         </div>
       </div>
@@ -386,6 +430,13 @@ export default {
         compliance: false,
         jingman: false
       },
+      
+      // 已申请应用列表
+      appliedApps: [
+        { id: 'app-001', name: 'HR数据平台', description: 'AppKey: ak_hr****8f2d', icon: 'app', statusClass: 'approved', statusText: '已通过' },
+        { id: 'app-002', name: '考勤管理助手', description: 'AppKey: ak_at****3e1a', icon: 'calendar', statusClass: 'approved', statusText: '已通过' },
+        { id: 'app-003', name: '薪酬查询工具', description: '等待管理员审批', icon: 'money-circle', statusClass: 'pending', statusText: '审批中' }
+      ],
       
       // API统计数据
       apiStats: {
@@ -691,6 +742,9 @@ System.out.println(response.body());`
     },
     toggleCategory(category) {
       this.expandedCategories[category] = !this.expandedCategories[category];
+    },
+    handleViewApp(app) {
+      this.$message.info(`查看应用: ${app.name}`);
     },
     handleViewDocs() {
       this.$message.success('跳转到API文档');
@@ -1027,7 +1081,7 @@ System.out.println(response.body());`
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
@@ -1268,10 +1322,13 @@ System.out.println(response.body());`
   font-size: 12px;
   color: var(--td-text-color-secondary);
   margin-bottom: 4px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
   width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  max-height: 2.8em;
 }
 
 .api-count {
@@ -1417,7 +1474,7 @@ System.out.println(response.body());`
 /* 主内容区域布局 */
 .main-content-wrapper {
   display: flex;
-  max-width: 1400px;
+  max-width: 1920px;
   margin: 0 auto;
   padding: 0 24px;
   gap: 24px;
@@ -1428,34 +1485,139 @@ System.out.println(response.body());`
   min-width: 0;
 }
 
-/* 右侧固定开发者指南 */
-.developer-guide-sidebar {
-  width: 280px;
+/* 左侧边栏 - 已申请应用 */
+.left-sidebar {
+  width: 320px;
   flex-shrink: 0;
   position: sticky;
   top: 24px;
   height: fit-content;
+}
+
+/* 右侧固定区域 */
+.right-sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 24px;
+  height: fit-content;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* 已申请应用模块 */
+.applied-apps-section {
   background: white;
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.applied-apps-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--td-bg-color-container);
+}
+
+.app-item:hover {
+  background: var(--td-bg-color-container-hover);
+  transform: translateX(4px);
+}
+
+.app-item .step-icon-large.approved {
+  background: linear-gradient(135deg, #52c41a 0%, #73d13d 100%);
+}
+
+.app-item .step-icon-large.pending {
+  background: linear-gradient(135deg, #faad14 0%, #ffc53d 100%);
+}
+
+.app-status {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.app-status.approved {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.app-status.pending {
+  background: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+}
+
+.empty-apps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  color: var(--td-text-color-placeholder);
+}
+
+.empty-apps p {
+  margin: 8px 0 0;
+  font-size: 13px;
+}
+
+.apply-new-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.apply-new-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 82, 217, 0.3);
+}
+
+/* 右侧固定开发者指南 */
+.developer-guide-sidebar {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .guide-header {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--td-component-border);
 }
 
 .guide-header h3 {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
-  margin: 0 0 4px 0;
+  margin: 0 0 6px 0;
   color: var(--td-text-color-primary);
 }
 
 .guide-header p {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--td-text-color-secondary);
   margin: 0;
 }
@@ -1463,15 +1625,15 @@ System.out.println(response.body());`
 .guide-steps-vertical {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .step-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   background: var(--td-bg-color-container);
@@ -1480,6 +1642,22 @@ System.out.println(response.body());`
 .step-item:hover {
   background: var(--td-bg-color-container-hover);
   transform: translateX(4px);
+}
+
+.step-icon-large {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-icon-large .t-icon {
+  font-size: 24px;
+  color: white !important;
 }
 
 .step-item .step-number {
@@ -1504,14 +1682,14 @@ System.out.println(response.body());`
 }
 
 .step-info h4 {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
-  margin: 0 0 2px 0;
+  margin: 0 0 4px 0;
   color: var(--td-text-color-primary);
 }
 
 .step-info p {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--td-text-color-secondary);
   margin: 0;
   white-space: nowrap;
@@ -1521,12 +1699,12 @@ System.out.println(response.body());`
 
 .step-item .t-icon {
   color: var(--td-text-color-placeholder);
-  font-size: 16px;
+  font-size: 18px;
 }
 
 /* 代码示例样式 */
 .api-examples {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto 64px;
   padding: 0 24px;
 }
@@ -1548,7 +1726,7 @@ System.out.println(response.body());`
 
 /* API状态样式 */
 .api-status {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto 64px;
   padding: 0 24px;
 }
@@ -1608,7 +1786,7 @@ System.out.println(response.body());`
 }
 
 .support-grid {
-  max-width: 1200px;
+  max-width: 1920px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -1648,16 +1826,72 @@ System.out.println(response.body());`
 }
 
 /* 响应式设计 */
+/* 大屏幕 1920px+ */
+@media (min-width: 1600px) {
+  .left-sidebar,
+  .right-sidebar {
+    width: 360px;
+  }
+  
+  .category-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+/* 中大屏幕 1400px - 1600px */
+@media (max-width: 1600px) and (min-width: 1200px) {
+  .left-sidebar,
+  .right-sidebar {
+    width: 300px;
+  }
+}
+
+/* 中等屏幕 1024px - 1200px */
+@media (max-width: 1200px) and (min-width: 1024px) {
+  .left-sidebar,
+  .right-sidebar {
+    width: 260px;
+  }
+  
+  .step-icon-large {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+  }
+  
+  .step-icon-large .t-icon {
+    font-size: 20px;
+  }
+}
+
+/* 平板及以下 < 1024px */
 @media (max-width: 1024px) {
   .main-content-wrapper {
     flex-direction: column;
   }
   
-  .developer-guide-sidebar {
+  .left-sidebar,
+  .right-sidebar {
     width: 100%;
     position: static;
-    order: -1;
     margin-bottom: 24px;
+  }
+  
+  .left-sidebar {
+    order: -2;
+  }
+  
+  .right-sidebar {
+    order: -1;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .applied-apps-section,
+  .developer-guide-sidebar {
+    flex: 1;
+    min-width: 280px;
   }
   
   .guide-steps-vertical {
