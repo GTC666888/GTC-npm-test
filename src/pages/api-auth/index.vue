@@ -91,13 +91,13 @@
             clearable
             style="width: 200px;"
           >
-            <t-option value="all" label="全部领域" />
-            <t-option value="employee" label="员工管理" />
-            <t-option value="organization" label="组织架构" />
-            <t-option value="attendance" label="考勤管理" />
-            <t-option value="compensation" label="薪酬福利" />
-            <t-option value="performance" label="绩效管理" />
-            <t-option value="training" label="培训发展" />
+            <t-option value="all" :label="`全部领域 (${totalApiCount})`" />
+            <t-option 
+              v-for="cat in apiCategories" 
+              :key="cat.key" 
+              :value="cat.key" 
+              :label="`${cat.name} (${cat.apis.length})`" 
+            />
           </t-select>
 
           <div class="selection-stats">
@@ -108,8 +108,9 @@
         <!-- API列表 -->
         <div class="api-list">
           <div v-for="category in filteredApiCategories" :key="category.key" class="api-category">
-            <div class="category-header">
+            <div class="category-header" @click="toggleCategoryExpand(category.key)">
               <div class="category-title">
+                <t-icon :name="expandedCategories[category.key] ? 'chevron-down' : 'chevron-right'" class="expand-icon" />
                 <t-icon :name="category.icon" />
                 <span>{{ category.name }}</span>
                 <t-tag theme="primary" variant="light">{{ category.apis.length }} 个API</t-tag>
@@ -117,13 +118,14 @@
               <t-checkbox 
                 :checked="isCategorySelected(category.key)"
                 :indeterminate="isCategoryIndeterminate(category.key)"
-                @change="toggleCategory(category.key)"
+                @change.stop="toggleCategory(category.key)"
+                @click.stop
               >
                 全选
               </t-checkbox>
             </div>
 
-            <div class="api-items">
+            <div v-show="expandedCategories[category.key]" class="api-items">
               <div v-for="api in category.apis" :key="api.id" class="api-item">
                 <t-checkbox 
                   :value="api.id"
@@ -178,18 +180,21 @@
               </div>
 
               <div class="field-list">
-                <t-checkbox-group v-if="apiFieldSelections[apiId]" v-model="apiFieldSelections[apiId]">
+                <t-checkbox-group v-if="apiFieldSelections[apiId]" :value="apiFieldSelections[apiId]" @change="(val) => onFieldSelectionChange(apiId, val)">
                   <div class="field-grid">
-                    <div v-for="field in getApiById(apiId).fields" :key="field.name" class="field-item">
-                    <t-checkbox :value="field.name">
-                      <div class="field-content">
-                        <div class="field-name">
-                          {{ field.name }}
-                          <t-tag v-if="field.required" theme="danger" size="small" variant="light">必需</t-tag>
+                    <div v-for="field in getApiById(apiId).fields" :key="field.name" class="field-item" :class="{ 'required-field': field.required }">
+                      <t-checkbox :value="field.name" :disabled="field.required">
+                        <div class="field-content">
+                          <div class="field-name">
+                            {{ field.label || field.name }}
+                            <t-tag v-if="field.required" theme="danger" size="small" variant="light">必填</t-tag>
+                          </div>
+                          <div class="field-meta">
+                            <span class="field-key">{{ field.name }}</span>
+                            <span class="field-type">{{ field.type }}</span>
+                          </div>
+                          <div class="field-desc">{{ field.description }}</div>
                         </div>
-                        <div class="field-type">{{ field.type }}</div>
-                        <div class="field-desc">{{ field.description }}</div>
-                      </div>
                       </t-checkbox>
                     </div>
                   </div>
@@ -274,6 +279,7 @@
             size="large" 
             @click="submitAuthorization"
             :loading="submitting"
+            class="submit-btn"
           >
             <t-icon name="check" />
             提交申请
@@ -287,6 +293,8 @@
 <script>
 import { Icon as TIcon } from 'tdesign-icons-vue'
 import { MessagePlugin } from 'tdesign-vue'
+import { getApiCategoriesArray, getTotalApiCount as getTotal, getApiById as findApiById } from '@/constants/erCategories'
+import { getApprovedAppsList } from '@/constants/approvedApps'
 
 export default {
   name: 'ApiAuth',
@@ -301,36 +309,8 @@ export default {
       // 选中的应用
       selectedApp: null,
       
-      // 已审核通过的应用列表
-      approvedApps: [
-        {
-          id: 'app-001',
-          name: '人力资源管理',
-          siteUrl: 'https://hr.company.com',
-          description: '企业内部人力资源管理平台，用于员工信息管理、考勤统计、薪资核算等',
-          appKey: 'ak_1234567890abcdef',
-          appSecret: 'as_abcdef1234567890',
-          status: 'approved'
-        },
-        {
-          id: 'app-002',
-          name: '移动办公APP',
-          siteUrl: 'https://mobile.company.com',
-          description: '移动端办公应用，支持移动打卡、请假审批、工资查询等功能',
-          appKey: 'ak_fedcba0987654321',
-          appSecret: 'as_0987654321fedcba',
-          status: 'approved'
-        },
-        {
-          id: 'app-003',
-          name: '数据分析平台',
-          siteUrl: 'https://analytics.company.com',
-          description: '企业数据分析平台，用于人力资源数据统计和可视化分析',
-          appKey: 'ak_abcd1234efgh5678',
-          appSecret: 'as_5678efghabcd1234',
-          status: 'approved'
-        }
-      ],
+      // 已审核通过的应用列表 - 只获取已通过审核的应用
+      approvedApps: getApprovedAppsList(),
       
       // API选择相关
       apiSearchKeyword: '',
@@ -340,211 +320,22 @@ export default {
       // API字段选择
       apiFieldSelections: {},
       
-      // API分类数据
-      apiCategories: [
-        {
-          key: 'groupEmployment',
-          name: '集团用工',
-          icon: 'usergroup',
-          apis: [
-            { 
-              id: 'group-emp-list', 
-              method: 'GET', 
-              name: '/api/group/employees', 
-              description: '获取集团员工列表',
-              fields: [
-                { name: 'id', type: 'string', description: '员工ID', required: true },
-                { name: 'name', type: 'string', description: '员工姓名', required: true },
-                { name: 'email', type: 'string', description: '邮箱地址', required: false },
-                { name: 'phone', type: 'string', description: '手机号码', required: false },
-                { name: 'department', type: 'string', description: '所属部门', required: false },
-                { name: 'position', type: 'string', description: '职位', required: false },
-                { name: 'hireDate', type: 'date', description: '入职日期', required: false },
-                { name: 'status', type: 'string', description: '员工状态', required: true }
-              ]
-            },
-            { 
-              id: 'group-contract', 
-              method: 'GET', 
-              name: '/api/group/contracts', 
-              description: '集团劳动合同管理',
-              fields: [
-                { name: 'id', type: 'string', description: '合同ID', required: true },
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'contractType', type: 'string', description: '合同类型', required: true },
-                { name: 'startDate', type: 'date', description: '合同开始日期', required: true },
-                { name: 'endDate', type: 'date', description: '合同结束日期', required: false },
-                { name: 'status', type: 'string', description: '合同状态', required: true }
-              ]
-            },
-            { 
-              id: 'group-transfer', 
-              method: 'POST', 
-              name: '/api/group/transfer', 
-              description: '集团内部调动',
-              fields: [
-                { name: 'id', type: 'string', description: '调动ID', required: true },
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'fromDepartment', type: 'string', description: '原部门', required: true },
-                { name: 'toDepartment', type: 'string', description: '目标部门', required: true },
-                { name: 'transferDate', type: 'date', description: '调动日期', required: true },
-                { name: 'status', type: 'string', description: '调动状态', required: true }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'informalEmployment',
-          name: '非正式用工',
-          icon: 'user',
-          apis: [
-            { 
-              id: 'temp-emp-list', 
-              method: 'GET', 
-              name: '/api/temp/employees', 
-              description: '获取临时工列表',
-              fields: [
-                { name: 'id', type: 'string', description: '临时工ID', required: true },
-                { name: 'name', type: 'string', description: '姓名', required: true },
-                { name: 'phone', type: 'string', description: '联系电话', required: true },
-                { name: 'workType', type: 'string', description: '工作类型', required: true },
-                { name: 'startDate', type: 'date', description: '开始日期', required: true },
-                { name: 'endDate', type: 'date', description: '结束日期', required: false },
-                { name: 'status', type: 'string', description: '状态', required: true }
-              ]
-            },
-            { 
-              id: 'outsource-manage', 
-              method: 'GET', 
-              name: '/api/outsource/manage', 
-              description: '外包人员管理',
-              fields: [
-                { name: 'id', type: 'string', description: '外包人员ID', required: true },
-                { name: 'name', type: 'string', description: '姓名', required: true },
-                { name: 'company', type: 'string', description: '外包公司', required: true },
-                { name: 'project', type: 'string', description: '项目名称', required: false },
-                { name: 'contractPeriod', type: 'string', description: '合同期限', required: false },
-                { name: 'status', type: 'string', description: '状态', required: true }
-              ]
-            },
-            { 
-              id: 'flexible-work', 
-              method: 'POST', 
-              name: '/api/flexible/work', 
-              description: '灵活用工管理',
-              fields: [
-                { name: 'id', type: 'string', description: '灵活用工ID', required: true },
-                { name: 'workerId', type: 'string', description: '工作者ID', required: true },
-                { name: 'workType', type: 'string', description: '工作类型', required: true },
-                { name: 'workHours', type: 'number', description: '工作时长', required: false },
-                { name: 'payRate', type: 'number', description: '薪酬标准', required: false },
-                { name: 'status', type: 'string', description: '状态', required: true }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'compliance',
-          name: '合规',
-          icon: 'secured',
-          apis: [
-            { 
-              id: 'legal-check', 
-              method: 'GET', 
-              name: '/api/compliance/legal', 
-              description: '法律合规检查',
-              fields: [
-                { name: 'id', type: 'string', description: '检查ID', required: true },
-                { name: 'checkType', type: 'string', description: '检查类型', required: true },
-                { name: 'checkDate', type: 'date', description: '检查日期', required: true },
-                { name: 'result', type: 'string', description: '检查结果', required: true },
-                { name: 'riskLevel', type: 'string', description: '风险等级', required: false },
-                { name: 'recommendations', type: 'array', description: '建议措施', required: false }
-              ]
-            },
-            { 
-              id: 'audit-report', 
-              method: 'POST', 
-              name: '/api/compliance/audit', 
-              description: '合规审计报告',
-              fields: [
-                { name: 'id', type: 'string', description: '审计ID', required: true },
-                { name: 'auditPeriod', type: 'string', description: '审计周期', required: true },
-                { name: 'auditScope', type: 'string', description: '审计范围', required: true },
-                { name: 'findings', type: 'array', description: '审计发现', required: false },
-                { name: 'complianceScore', type: 'number', description: '合规评分', required: true },
-                { name: 'status', type: 'string', description: '审计状态', required: true }
-              ]
-            },
-            { 
-              id: 'risk-assess', 
-              method: 'GET', 
-              name: '/api/compliance/risk', 
-              description: '风险评估管理',
-              fields: [
-                { name: 'id', type: 'string', description: '风险ID', required: true },
-                { name: 'riskType', type: 'string', description: '风险类型', required: true },
-                { name: 'riskLevel', type: 'string', description: '风险等级', required: true },
-                { name: 'probability', type: 'number', description: '发生概率', required: false },
-                { name: 'impact', type: 'number', description: '影响程度', required: false },
-                { name: 'mitigationPlan', type: 'string', description: '缓解计划', required: false }
-              ]
-            }
-          ]
-        },
-        {
-          key: 'jingman',
-          name: '敬满',
-          icon: 'heart',
-          apis: [
-            { 
-              id: 'jm-employee', 
-              method: 'GET', 
-              name: '/api/jingman/employees', 
-              description: '敬满员工管理',
-              fields: [
-                { name: 'id', type: 'string', description: '员工ID', required: true },
-                { name: 'name', type: 'string', description: '员工姓名', required: true },
-                { name: 'age', type: 'number', description: '年龄', required: false },
-                { name: 'serviceYears', type: 'number', description: '服务年限', required: false },
-                { name: 'specialNeeds', type: 'array', description: '特殊需求', required: false },
-                { name: 'careLevel', type: 'string', description: '关怀等级', required: false }
-              ]
-            },
-            { 
-              id: 'jm-welfare', 
-              method: 'POST', 
-              name: '/api/jingman/welfare', 
-              description: '敬满福利管理',
-              fields: [
-                { name: 'id', type: 'string', description: '福利ID', required: true },
-                { name: 'employeeId', type: 'string', description: '员工ID', required: true },
-                { name: 'welfareType', type: 'string', description: '福利类型', required: true },
-                { name: 'amount', type: 'number', description: '福利金额', required: false },
-                { name: 'effectiveDate', type: 'date', description: '生效日期', required: true },
-                { name: 'status', type: 'string', description: '福利状态', required: true }
-              ]
-            },
-            { 
-              id: 'jm-service', 
-              method: 'GET', 
-              name: '/api/jingman/service', 
-              description: '敬满服务管理',
-              fields: [
-                { name: 'id', type: 'string', description: '服务ID', required: true },
-                { name: 'serviceType', type: 'string', description: '服务类型', required: true },
-                { name: 'serviceProvider', type: 'string', description: '服务提供方', required: false },
-                { name: 'serviceDate', type: 'date', description: '服务日期', required: true },
-                { name: 'beneficiaries', type: 'array', description: '受益人员', required: false },
-                { name: 'feedback', type: 'string', description: '服务反馈', required: false }
-              ]
-            }
-          ]
-        }
-      ]
+      // 分类展开状态
+      expandedCategories: {
+        groupEmployment: true,
+        informalEmployment: false,
+        compliance: false,
+        jingman: false
+      },
+      
+      // API分类数据 - 使用公共常量
+      apiCategories: getApiCategoriesArray()
     }
   },
   computed: {
+    totalApiCount() {
+      return getTotal()
+    },
     filteredApiCategories() {
       let categories = this.apiCategories
       
@@ -584,12 +375,14 @@ export default {
         MessagePlugin.warning('请至少选择一个API接口')
         return
       }
-      if (this.currentStep === 2) {
-        // 初始化字段选择（默认选中所有必需字段）
+      if (this.currentStep === 1) {
+        // 从第2步进入第3步前，初始化字段选择（默认选中所有必需字段）
         this.selectedApis.forEach(apiId => {
           if (!this.apiFieldSelections[apiId]) {
             const api = this.getApiById(apiId)
-            this.$set(this.apiFieldSelections, apiId, api.fields.filter(f => f.required).map(f => f.name))
+            if (api && api.fields) {
+              this.$set(this.apiFieldSelections, apiId, api.fields.filter(f => f.required).map(f => f.name))
+            }
           }
         })
       }
@@ -652,6 +445,11 @@ export default {
       return selectedCount > 0 && selectedCount < categoryApiIds.length
     },
     
+    // 切换分类展开/收起
+    toggleCategoryExpand(categoryKey) {
+      this.$set(this.expandedCategories, categoryKey, !this.expandedCategories[categoryKey])
+    },
+    
     // 字段选择相关
     toggleAllFields(apiId) {
       const api = this.getApiById(apiId)
@@ -687,13 +485,23 @@ export default {
       return currentSelection.length > 0 && currentSelection.length < allFieldNames.length
     },
     
+    // 字段选择变更处理（确保必填字段始终选中）
+    onFieldSelectionChange(apiId, selectedFields) {
+      const api = this.getApiById(apiId)
+      if (!api) return
+      
+      // 获取所有必填字段名
+      const requiredFieldNames = api.fields.filter(f => f.required).map(f => f.name)
+      
+      // 合并必填字段（确保必填字段始终在选中列表中）
+      const finalSelection = [...new Set([...selectedFields, ...requiredFieldNames])]
+      
+      this.$set(this.apiFieldSelections, apiId, finalSelection)
+    },
+    
     // 获取API信息
     getApiById(apiId) {
-      for (const category of this.apiCategories) {
-        const api = category.apis.find(a => a.id === apiId)
-        if (api) return api
-      }
-      return null
+      return findApiById(apiId)
     },
     
     // 提交授权
@@ -924,6 +732,12 @@ export default {
   padding: 16px 20px;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.category-header:hover {
+  background: #f0f0f0;
 }
 
 .category-title {
@@ -933,6 +747,10 @@ export default {
   font-size: 16px;
   font-weight: 600;
   color: #262626;
+}
+
+.expand-icon {
+  transition: transform 0.2s;
 }
 
 .api-items {
@@ -1016,21 +834,32 @@ export default {
 }
 
 .field-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .field-item {
-  padding: 12px;
+  padding: 10px 14px;
   border: 1px solid #e8e8e8;
   border-radius: 6px;
   transition: all 0.2s;
+  flex-shrink: 0;
 }
 
 .field-item:hover {
   border-color: #0052d9;
   background: #f0f5ff;
+}
+
+.field-item.required-field {
+  border-color: #ffccc7;
+  background: #fff1f0;
+}
+
+.field-item.required-field:hover {
+  border-color: #ff7875;
+  background: #fff1f0;
 }
 
 .field-content {
@@ -1047,11 +876,29 @@ export default {
   margin-bottom: 4px;
 }
 
-.field-type {
+.field-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.field-key {
   font-size: 12px;
+  color: #595959;
+  font-family: 'Monaco', 'Consolas', monospace;
+  background: #f5f5f5;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.field-type {
+  font-size: 11px;
   color: #0052d9;
   font-family: 'Monaco', 'Consolas', monospace;
-  margin-bottom: 4px;
+  background: #e6f4ff;
+  padding: 1px 6px;
+  border-radius: 3px;
 }
 
 .field-desc {
@@ -1149,10 +996,6 @@ export default {
     grid-template-columns: 1fr;
   }
   
-  .field-grid {
-    grid-template-columns: 1fr;
-  }
-  
   .toolbar {
     flex-direction: column;
     align-items: stretch;
@@ -1167,5 +1010,11 @@ export default {
     margin-left: 0;
     text-align: center;
   }
+}
+
+.submit-btn ::v-deep .t-button__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 </style>

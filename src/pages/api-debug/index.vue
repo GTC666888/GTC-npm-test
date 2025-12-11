@@ -62,32 +62,6 @@
           </t-button>
         </div>
 
-        <!-- 鉴权区域 -->
-        <div class="auth-section">
-          <div class="section-title">鉴权</div>
-          <div class="auth-row">
-            <t-select v-model="request.authType" class="auth-type-select" :popup-props="{ overlayClassName: 'dark-popup' }">
-              <t-option value="bearer">Bearer</t-option>
-              <t-option value="basic">Basic Auth</t-option>
-              <t-option value="apikey">API Key</t-option>
-              <t-option value="none">无鉴权</t-option>
-            </t-select>
-            <div class="token-input-wrapper">
-              <input 
-                v-model="request.token" 
-                :type="showToken ? 'text' : 'password'"
-                class="token-input" 
-                placeholder="Token"
-              />
-              <t-icon 
-                :name="showToken ? 'browse' : 'browse-off'" 
-                class="toggle-icon"
-                @click="showToken = !showToken"
-              />
-            </div>
-          </div>
-        </div>
-
         <!-- Headers区域 -->
         <div class="headers-section">
           <div class="section-title">Headers</div>
@@ -230,22 +204,21 @@
 
 <script>
 import axios from 'axios'
+import { getApiById } from '@/constants/erCategories'
 
 export default {
   name: 'ApiDebug',
   data() {
     return {
       loading: false,
-      showToken: false,
       isLocked: false,  // 是否为锁定模式（试用模式）
       apiName: '',      // API名称（锁定模式显示）
+      currentApiInfo: null, // 当前API详情（包含fields）
       
       // 请求配置
       request: {
         method: 'POST',
         url: 'https://ark.cn-beijing.volces.com/api/v3/chat/completions',
-        authType: 'bearer',
-        token: '',
         bodyType: 'json',
         body: `{
   "model": "<YOUR_MODEL_EP>",
@@ -399,7 +372,6 @@ export default {
     
     // 生成模拟响应数据
     generateMockResponse() {
-      const url = this.request.url.toLowerCase()
       const method = this.request.method.toUpperCase()
       
       // 解析请求body
@@ -420,129 +392,176 @@ export default {
         'date': new Date().toUTCString()
       }
       
-      // 检查是否提供了Token
-      if (!this.request.token) {
-        return {
-          status: 401,
-          data: {
-            error: {
-              code: "AuthenticationError",
-              message: "the API key or AK/SK in the request is missing or invalid. request id: " + this.generateRequestId(),
-              param: "",
-              type: "Unauthorized"
+      // 如果有当前API信息，根据API字段生成响应
+      if (this.currentApiInfo && this.currentApiInfo.fields) {
+        return this.mockApiFieldsResponse(method, requestBody, mockHeaders)
+      }
+      
+      // 通用API响应
+      return this.mockGenericResponse(method, requestBody, mockHeaders)
+    },
+    
+    // 根据API字段定义生成模拟响应
+    mockApiFieldsResponse(method, requestBody, headers) {
+      const fields = this.currentApiInfo.fields
+      
+      // 根据字段类型生成模拟数据
+      const generateFieldValue = (field) => {
+        switch (field.type) {
+          case 'string':
+            // 根据字段名生成合理的模拟值
+            if (field.name.toLowerCase().includes('id')) {
+              return `${field.name.toUpperCase()}_${Math.random().toString(36).substring(2, 10)}`
             }
-          },
-          headers: mockHeaders
+            if (field.name.toLowerCase().includes('name') || field.name.toLowerCase().includes('姓名')) {
+              return ['张三', '李四', '王五', '赵六'][Math.floor(Math.random() * 4)]
+            }
+            if (field.name.toLowerCase().includes('phone') || field.name.toLowerCase().includes('电话')) {
+              return '138****' + Math.floor(Math.random() * 10000).toString().padStart(4, '0')
+            }
+            if (field.name.toLowerCase().includes('email') || field.name.toLowerCase().includes('邮箱')) {
+              return 'user' + Math.floor(Math.random() * 1000) + '@company.com'
+            }
+            if (field.name.toLowerCase().includes('status') || field.name.toLowerCase().includes('状态')) {
+              return ['正常', '待审核', '已完成', '进行中'][Math.floor(Math.random() * 4)]
+            }
+            if (field.name.toLowerCase().includes('type') || field.name.toLowerCase().includes('类型')) {
+              return field.description || '类型A'
+            }
+            if (field.name.toLowerCase().includes('dept') || field.name.toLowerCase().includes('部门')) {
+              return ['技术部', '产品部', '运营部', '人力资源部'][Math.floor(Math.random() * 4)]
+            }
+            if (field.name.toLowerCase().includes('position') || field.name.toLowerCase().includes('职位')) {
+              return ['工程师', '产品经理', '设计师', '运营专员'][Math.floor(Math.random() * 4)]
+            }
+            if (field.name.toLowerCase().includes('reason') || field.name.toLowerCase().includes('原因')) {
+              return '模拟原因说明'
+            }
+            if (field.name.toLowerCase().includes('description') || field.name.toLowerCase().includes('描述')) {
+              return field.description || '模拟描述内容'
+            }
+            if (field.name.toLowerCase().includes('content') || field.name.toLowerCase().includes('内容')) {
+              return '模拟内容数据'
+            }
+            return field.label || field.name
+          case 'number':
+            return Math.floor(Math.random() * 1000)
+          case 'boolean':
+            return Math.random() > 0.5
+          case 'date':
+            const date = new Date()
+            date.setDate(date.getDate() - Math.floor(Math.random() * 365))
+            return date.toISOString().split('T')[0]
+          case 'array':
+            return ['item1', 'item2', 'item3']
+          case 'object':
+            return { key: 'value', nested: true }
+          case 'file':
+            return { fileName: 'example.xlsx', fileSize: '1.2MB', uploadTime: new Date().toISOString() }
+          default:
+            return field.label || field.name
         }
       }
       
-      // 根据URL类型生成对应的模拟数据
-      if (url.includes('chat') || url.includes('completions')) {
-        return this.mockChatResponse(requestBody, mockHeaders)
-      } else if (url.includes('image') || url.includes('generation')) {
-        return this.mockImageResponse(requestBody, mockHeaders)
-      } else if (url.includes('embedding')) {
-        return this.mockEmbeddingResponse(requestBody, mockHeaders)
-      } else if (url.includes('model')) {
-        return this.mockModelListResponse(mockHeaders)
-      } else {
-        // 通用API响应
-        return this.mockGenericResponse(method, requestBody, mockHeaders)
+      // 生成单条记录数据
+      const generateRecord = () => {
+        const record = {}
+        fields.forEach(field => {
+          record[field.name] = generateFieldValue(field)
+        })
+        return record
+      }
+      
+      if (method === 'GET') {
+        // GET请求返回列表或单条数据
+        const isList = this.currentApiInfo.name.includes('list') || 
+                       this.currentApiInfo.name.includes('query') ||
+                       this.currentApiInfo.description.includes('列表') ||
+                       this.currentApiInfo.description.includes('查询')
+        
+        if (isList) {
+          // 返回列表数据
+          const list = Array.from({ length: 5 }, () => generateRecord())
+          return {
+            status: 200,
+            data: {
+              code: 0,
+              message: '查询成功',
+              data: {
+                list: list,
+                pagination: {
+                  page: 1,
+                  pageSize: 10,
+                  total: 100
+                }
+              }
+            },
+            headers
+          }
+        } else {
+          // 返回单条数据
+          return {
+            status: 200,
+            data: {
+              code: 0,
+              message: '查询成功',
+              data: generateRecord()
+            },
+            headers
+          }
+        }
+      } else if (method === 'POST') {
+        return {
+          status: 200,
+          data: {
+            code: 0,
+            message: '操作成功',
+            data: {
+              ...generateRecord(),
+              createdAt: new Date().toISOString()
+            }
+          },
+          headers
+        }
+      } else if (method === 'PUT' || method === 'PATCH') {
+        return {
+          status: 200,
+          data: {
+            code: 0,
+            message: '更新成功',
+            data: {
+              ...generateRecord(),
+              updatedAt: new Date().toISOString()
+            }
+          },
+          headers
+        }
+      } else if (method === 'DELETE') {
+        return {
+          status: 200,
+          data: {
+            code: 0,
+            message: '删除成功',
+            data: null
+          },
+          headers
+        }
+      }
+      
+      return {
+        status: 200,
+        data: {
+          code: 0,
+          message: '请求成功',
+          data: generateRecord()
+        },
+        headers
       }
     },
     
     // 生成请求ID
     generateRequestId() {
       return 'req_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-    },
-    
-    // 模拟Chat API响应
-    mockChatResponse(requestBody, headers) {
-      const model = requestBody.model || 'doubao-pro-32k'
-      return {
-        status: 200,
-        data: {
-          id: "chatcmpl-" + this.generateRequestId(),
-          object: "chat.completion",
-          created: Math.floor(Date.now() / 1000),
-          model: model,
-          choices: [
-            {
-              index: 0,
-              message: {
-                role: "assistant",
-                content: "您好！我是AI助手，这是一条模拟的响应消息。当前为调试模式，返回的是模拟数据而非真实API调用结果。\n\n如需测试真实API，请配置实际的API服务。"
-              },
-              finish_reason: "stop"
-            }
-          ],
-          usage: {
-            prompt_tokens: Math.floor(Math.random() * 100) + 20,
-            completion_tokens: Math.floor(Math.random() * 200) + 50,
-            total_tokens: Math.floor(Math.random() * 300) + 70
-          }
-        },
-        headers
-      }
-    },
-    
-    // 模拟Image API响应
-    mockImageResponse(requestBody, headers) {
-      return {
-        status: 200,
-        data: {
-          created: Math.floor(Date.now() / 1000),
-          data: [
-            {
-              url: "https://example.com/mock-image-" + this.generateRequestId() + ".png",
-              revised_prompt: requestBody.prompt || "模拟生成的图片"
-            }
-          ]
-        },
-        headers
-      }
-    },
-    
-    // 模拟Embedding API响应
-    mockEmbeddingResponse(requestBody, headers) {
-      // 生成模拟的embedding向量（1536维）
-      const mockEmbedding = Array.from({ length: 1536 }, () => (Math.random() - 0.5) * 0.1)
-      return {
-        status: 200,
-        data: {
-          object: "list",
-          data: [
-            {
-              object: "embedding",
-              index: 0,
-              embedding: mockEmbedding.slice(0, 10).concat(['... 更多维度数据省略 ...'])
-            }
-          ],
-          model: requestBody.model || "text-embedding-ada-002",
-          usage: {
-            prompt_tokens: Math.floor(Math.random() * 50) + 10,
-            total_tokens: Math.floor(Math.random() * 50) + 10
-          }
-        },
-        headers
-      }
-    },
-    
-    // 模拟模型列表响应
-    mockModelListResponse(headers) {
-      return {
-        status: 200,
-        data: {
-          object: "list",
-          data: [
-            { id: "doubao-pro-32k", object: "model", created: 1700000000, owned_by: "bytedance" },
-            { id: "doubao-lite-4k", object: "model", created: 1700000000, owned_by: "bytedance" },
-            { id: "doubao-vision", object: "model", created: 1700000000, owned_by: "bytedance" },
-            { id: "doubao-embedding", object: "model", created: 1700000000, owned_by: "bytedance" }
-          ]
-        },
-        headers
-      }
     },
     
     // 模拟通用API响应
@@ -680,6 +699,53 @@ export default {
       this.updateLineCount()
     },
     
+    // 根据API字段生成默认Body
+    setDefaultBodyFromFields() {
+      const method = this.request.method.toUpperCase()
+      
+      if (method === 'GET' || method === 'DELETE' || method === 'HEAD') {
+        this.request.body = ''
+        this.request.bodyType = 'none'
+        this.updateLineCount()
+        return
+      }
+      
+      // 根据字段生成示例请求体
+      const fields = this.currentApiInfo.fields || []
+      const body = {}
+      
+      fields.forEach(field => {
+        if (field.required) {
+          switch (field.type) {
+            case 'string':
+              body[field.name] = `<${field.label || field.name}>`
+              break
+            case 'number':
+              body[field.name] = 0
+              break
+            case 'boolean':
+              body[field.name] = false
+              break
+            case 'date':
+              body[field.name] = new Date().toISOString().split('T')[0]
+              break
+            case 'array':
+              body[field.name] = []
+              break
+            case 'object':
+              body[field.name] = {}
+              break
+            default:
+              body[field.name] = `<${field.label || field.name}>`
+          }
+        }
+      })
+      
+      this.request.body = JSON.stringify(body, null, 2)
+      this.request.bodyType = 'json'
+      this.updateLineCount()
+    },
+    
     // 关闭页面
     handleClose() {
       this.$router.back()
@@ -687,7 +753,12 @@ export default {
   },
   mounted() {
     // 检查路由参数，处理试用模式
-    const { url, method, apiName, locked } = this.$route.query
+    const { url, method, apiName, locked, apiId } = this.$route.query
+    
+    // 如果有apiId，获取API详情
+    if (apiId) {
+      this.currentApiInfo = getApiById(apiId)
+    }
     
     if (locked === 'true') {
       this.isLocked = true
@@ -701,21 +772,15 @@ export default {
         this.request.method = method.toUpperCase()
       }
       
-      // 根据API类型设置默认Body
-      this.setDefaultBody(method)
+      // 根据API字段生成默认Body
+      if (this.currentApiInfo && this.currentApiInfo.fields) {
+        this.setDefaultBodyFromFields()
+      } else {
+        this.setDefaultBody(method)
+      }
       
       // 清空默认响应
       this.response.data = null
-    } else {
-      // 非试用模式，显示默认响应示例
-      this.response.data = {
-        error: {
-          code: "AuthenticationError",
-          message: "the API key or AK/SK in the request is missing or invalid. request id: 02176534905211115de161b16d50149cbf4122a430bab0f0686736",
-          param: "",
-          type: "Unauthorized"
-        }
-      }
     }
   }
 }
@@ -987,62 +1052,11 @@ export default {
   background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
 }
 
-/* 鉴权区域 */
-.auth-section {
-  background: #1e1e38;
-  border-radius: 8px;
-  padding: 16px;
-}
-
 .section-title {
   font-size: 13px;
   color: #888;
   margin-bottom: 12px;
   font-weight: 500;
-}
-
-.auth-row {
-  display: flex;
-  gap: 12px;
-}
-
-.auth-type-select {
-  width: 120px;
-}
-
-.auth-type-select :deep(.t-input) {
-  background: #252542;
-  border: 1px solid #3d3d5c;
-  color: #e0e0e0;
-}
-
-.token-input-wrapper {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  background: #252542;
-  border: 1px solid #3d3d5c;
-  border-radius: 6px;
-  padding: 0 12px;
-}
-
-.token-input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: #e0e0e0;
-  font-size: 14px;
-  padding: 8px 0;
-  outline: none;
-}
-
-.toggle-icon {
-  color: #666;
-  cursor: pointer;
-}
-
-.toggle-icon:hover {
-  color: #888;
 }
 
 /* Headers区域 */
@@ -1281,12 +1295,15 @@ export default {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
 }
 
 .response-body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .body-toolbar {
@@ -1351,6 +1368,7 @@ export default {
   display: flex;
   overflow: auto;
   background: #0d0d1a;
+  min-height: 0;
 }
 
 .code-content {

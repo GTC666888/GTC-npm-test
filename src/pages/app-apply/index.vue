@@ -81,6 +81,7 @@
                 @click="submitApplication" 
                 :loading="submitting"
                 :disabled="!agreeTerms"
+                class="submit-btn"
               >
                 <t-icon name="check" />提交申请
               </t-button>
@@ -193,7 +194,7 @@ export default {
 .apply-header {
   background: linear-gradient(135deg, #0052d9 0%, #0066ff 100%);
   color: white;
-  padding: 32px 24px;
+  padding: 32px 24px 72px;
 }
 
 .header-content {
@@ -204,6 +205,12 @@ export default {
 .back-btn {
   color: white;
   margin-bottom: 16px;
+}
+
+.back-btn ::v-deep .t-button__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .header-title h1 {
@@ -292,6 +299,12 @@ export default {
 .actions-right {
   display: flex;
   gap: 12px;
+}
+
+.submit-btn ::v-deep .t-button__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* 响应式设计 */

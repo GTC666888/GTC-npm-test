@@ -685,6 +685,7 @@ export default {
           url: `https://api.er.com/v1${api.apiName.replace('/api', '')}`,
           method: 'GET',
           apiName: api.description,
+          apiId: api.id,
           locked: 'true'
         }
       });

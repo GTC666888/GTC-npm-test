@@ -50,6 +50,11 @@ const router = new VueRouter({
       path: '/api-debug',
       name: 'ApiDebug',
       component: () => import('../pages/api-debug/index.vue')
+    },
+    {
+      path: '/api-docs',
+      name: 'ApiDocs',
+      component: () => import('../pages/api-docs/index.vue')
     }
   ]
 })
