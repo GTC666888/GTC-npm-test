@@ -40,11 +40,7 @@ const router = new VueRouter({
       name: 'ApiAuth',
       component: () => import('../pages/api-auth/index.vue')
     },
-    {
-      path: '/token',
-      name: 'Token',
-      component: () => import('../pages/token/index.vue')
-    },
+
     {
       path: '/swagger',
       name: 'Swagger',

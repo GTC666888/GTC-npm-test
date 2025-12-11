@@ -18,7 +18,7 @@
           </t-button>
           <t-button theme="default" @click="handleSwitchToB">
             <template #icon><t-icon name="chart" /></template>
-            企业监控版
+            管理端
           </t-button>
         </div>
       </div>
@@ -80,7 +80,7 @@
               </div>
               
               <div class="flow-connector">
-                <div class="connector-line"></div>
+                <div class="connector-line connector-line-first"></div>
                 <t-icon name="chevron-right" class="connector-arrow" />
               </div>
               
@@ -188,8 +188,7 @@
                 <span>审核通过后</span>
               </div>
               <ul class="tooltip-list">
-                <li><t-icon name="key" size="14px" />提供 appId</li>
-                <li><t-icon name="lock-on" size="14px" />提供 token</li>
+                <li><t-icon name="key" size="14px" />提供 appId / token</li>
                 <li><t-icon name="file-paste" size="14px" />对接所需要素</li>
               </ul>
             </template>
@@ -205,34 +204,6 @@
             </template>
           </div>
         </teleport>
-
-        <!-- API概览统计 -->
-        <div class="api-overview">
-          <t-row :gutter="20">
-            <t-col :span="6">
-              <div class="overview-card">
-                <div class="overview-icon primary">
-                  <t-icon name="api" />
-                </div>
-                <div class="overview-content">
-                  <div class="overview-value">{{ apiStats.total }}</div>
-                  <div class="overview-label">API总数</div>
-                </div>
-              </div>
-            </t-col>
-            <t-col :span="6">
-              <div class="overview-card">
-                <div class="overview-icon success">
-                  <t-icon name="check-circle" />
-                </div>
-                <div class="overview-content">
-                  <div class="overview-value">{{ apiStats.production }}</div>
-                  <div class="overview-label">生产环境</div>
-                </div>
-              </div>
-            </t-col>
-          </t-row>
-        </div>
 
         <!-- API分类展示 -->
         <div class="api-categories">
@@ -426,17 +397,6 @@
               <t-icon name="chevron-right" />
             </div>
 
-            <div class="step-item" @click="handleStepGuide('token')">
-              <div class="step-icon-large">
-                <t-icon name="secured" size="24px" />
-              </div>
-              <div class="step-info">
-                <h4>获取令牌</h4>
-                <p>获取Access Token</p>
-              </div>
-              <t-icon name="chevron-right" />
-            </div>
-
             <div class="step-item" @click="handleStepGuide('call')">
               <div class="step-icon-large">
                 <t-icon name="play-circle" size="24px" />
@@ -535,14 +495,6 @@ export default {
         { id: 'app-002', name: '考勤管理助手', description: 'AppKey: ak_at****3e1a', icon: 'calendar', statusClass: 'approved', statusText: '已通过' },
         { id: 'app-003', name: '薪酬查询工具', description: '等待管理员审批', icon: 'money-circle', statusClass: 'pending', statusText: '审批中' }
       ],
-      
-      // API统计数据
-      apiStats: {
-        total: 104,  // 32+28+24+20 = 104
-        production: 96,
-        developers: 356,
-        uptime: 99.9
-      },
 
       // API分类数据
       apiCategories: {
@@ -884,7 +836,7 @@ System.out.println(response.body());`
         
         this.branchStyle = {
           left: branchLeft + 'px',
-          top: branchTop + 'px'
+          top: 132 + 'px'
         };
       });
     },
@@ -922,12 +874,6 @@ System.out.println(response.body());`
         return;
       }
       
-      if (step === 'token') {
-        // 跳转到Token文档页面
-        this.$router.push('/token');
-        return;
-      }
-      
       if (step === 'call') {
         // 跳转到API在线调试页面
         this.$router.push('/api-debug');
@@ -937,7 +883,7 @@ System.out.println(response.body());`
     handleSwitchToB() {
       // 切换到企业监控版（B端版本）
       this.$router.push('/home-b2b');
-      this.$message.success('已切换到企业监控版');
+      this.$message.success('已切换到管理端');
     },
     handleSupport(type) {
       const supportMap = {
@@ -1260,55 +1206,6 @@ System.out.println(response.body());`
   gap: 16px;
 }
 
-/* API概览样式 */
-.api-overview {
-  margin: -24px 0 32px;
-  position: relative;
-  z-index: 2;
-}
-
-.overview-card {
-  background: white;
-  border-radius: 8px;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.overview-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-.overview-icon.primary { background: #e6f7ff; color: #1890ff; }
-.overview-icon.success { background: #f6ffed; color: #52c41a; }
-.overview-icon.warning { background: #fffbe6; color: #faad14; }
-.overview-icon.info { background: #f0f5ff; color: #597ef7; }
-
-.overview-content {
-  flex: 1;
-}
-
-.overview-value {
-  font-size: 28px;
-  font-weight: 600;
-  color: var(--td-text-color-primary);
-  line-height: 1;
-}
-
-.overview-label {
-  font-size: 14px;
-  color: var(--td-text-color-secondary);
-  margin-top: 4px;
-}
-
 /* 通用区块样式 */
 .section-header {
   text-align: center;
@@ -1366,6 +1263,7 @@ System.out.println(response.body());`
 }
 
 .flow-node {
+  z-index: 999;
   position: relative;
   flex-shrink: 0;
   display: flex;
@@ -1514,6 +1412,10 @@ System.out.println(response.body());`
   height: 2px;
   background: #d9d9d9;
   position: relative;
+}
+
+.connector-line-first {
+  left: -14px;
 }
 
 .connector-line::after {
